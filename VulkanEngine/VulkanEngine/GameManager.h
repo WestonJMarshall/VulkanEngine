@@ -18,6 +18,7 @@ public:
 	float Range = 2.0f;
 	bool activeOctTree = false;
 	std::vector<std::shared_ptr<GameObject>> gameObjects;
+	
 #pragma region Singleton
 
 	static GameManager* GetInstance();

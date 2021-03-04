@@ -3,12 +3,19 @@
 #include "KDTree.h"
 #include "DebugManager.h"
 
+int count = 0;
+
 struct bounds {
 	float xMax = 2.0f;
 	float yMax = 2.0f;
 	float xMin = -2.0f;
 	float yMin = -2.0f;
 }base;
+
+int getCount() 
+{
+	return count;
+}
 
 void drawRect()
 {
@@ -20,6 +27,8 @@ void drawRect()
 	DebugManager::GetInstance()->DrawLine(glm::vec3(bounds.xMax, bounds.yMin, 0.0f), glm::vec3(bounds.xMin, bounds.yMin, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
 
 	DebugManager::GetInstance()->DrawLine(glm::vec3(bounds.xMin, bounds.yMin, 0.0f), glm::vec3(bounds.xMin, bounds.yMax, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
+
+	count = 4;
 }
 
 void drawNode(KD_Node node, bounds space)
@@ -33,14 +42,14 @@ void drawNode(KD_Node node, bounds space)
 	//vertical
 	if (node.Get_type() == 100) {
 		DebugManager::GetInstance()->DrawLine(glm::vec3(x, space.yMax, 0.0f), glm::vec3(x, space.yMin, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
-
+		count++;
 		leftSpace.xMax = x;
 		rightSpace.xMin = x;
 	}
 	//horizontal
 	else if (node.Get_type() == 101) {
 		DebugManager::GetInstance()->DrawLine(glm::vec3(space.xMin, y, 0.0f), glm::vec3(space.xMax, y, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
-
+		count++;
 		leftSpace.yMax = y;
 		rightSpace.yMin = y;
 	}
@@ -53,7 +62,7 @@ void drawNode(KD_Node node, bounds space)
 			drawNode(*node.Get_rightTree(), rightSpace);
 		}
 	}
-
+	std::cout << "# of lines drawn: " << count << std::endl;
 }
 
 void drawKDTree(KD_Node root) {

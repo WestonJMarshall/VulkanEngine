@@ -277,7 +277,7 @@ void DebugManager::RemoveAllShapes()
 		
 			for (int i = 0; i < debugShapes[mesh].size(); i++)
 			{
-				std::cout << "Line: " << debugShapes[mesh][i] << std::endl;
+
 				//if there are lines
 				//std::cout << debugShapes[mesh].size() << std::endl;
 				if (debugShapes[mesh][i]) 
@@ -304,8 +304,8 @@ void DebugManager::AddShape(std::shared_ptr<Mesh> mesh, std::shared_ptr<DebugSha
 				return;
 			}
 		}
-
-		debugShapes[mesh].push_back(shape);
+			std::cout << "line count: " << debugShapes[mesh].size() << std::endl;
+		
 	}
 }
 

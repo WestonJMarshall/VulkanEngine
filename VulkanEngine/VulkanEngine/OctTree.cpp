@@ -34,9 +34,9 @@ void OctTreeManager::InitOctTree(float left, float right, float top, float botto
 
 // When updateing the tree, the manager goes throughand deactivates every node in the tree and then reactivates the root.
 // It then goes through the entire array of interactive shapes and adds them back into the tree. 
-void OctTreeManager::UpdateOctTree()
+void OctTreeManager::UpdateOctTree(bool update)
 {
-	if (needsToUpdate == true) {
+	if (update == true) {
 		ResetTree();
 		ActivateNode(_octTree[0]);
 		unsigned int shapesSize = _shapes.size();
@@ -44,9 +44,6 @@ void OctTreeManager::UpdateOctTree()
 			AddShape(_shapes[i], 0);
 		}
 	}
-	std::cout << needsToUpdate << std::endl;
-	needsToUpdate = false;
-	std::cout << needsToUpdate << std::endl;
 }
 
 void OctTreeManager::AddShape(std::shared_ptr<GameObject> shape) {
@@ -57,12 +54,10 @@ void OctTreeManager::AddShape(std::shared_ptr<GameObject> shape) {
 // during the init function.
 void OctTreeManager::DumpData()
 {
-	for (unsigned int i = 0; i < _octTree.size(); i++)
-	{
-		ResetTree();
-	}
-
+	despawnShapes();
+	_shapes.clear();
 	_octTree.clear();
+	
 }
 
 // Retrieves all the shapes that share a node with the shape passed in. It uses a method similar to when a shape is being
@@ -201,7 +196,7 @@ void OctTreeManager::InitChildren(int nodeIndex)
 	_octTree[node->children[5]] = InitNode(node->depth + 1, nodeIndex, childNum + 5, midX, node->right, node->top, midY, midZ, node->back);
 	_octTree[node->children[6]] = InitNode(node->depth + 1, nodeIndex, childNum + 6, node->left, midX, midY, node->bottom, midZ, node->back);
 	_octTree[node->children[7]] = InitNode(node->depth + 1, nodeIndex, childNum + 7, midX, node->right, node->top, midY, node->front, midZ);
-	//std::cout << "children intialized " << std::endl;
+	
 
 }
 
@@ -240,6 +235,7 @@ OctTreeNode* OctTreeManager::InitNode(int depth, int parentIndex, int childNum, 
 	node->outline->GetTransform()->SetPosition(glm::vec3((node->left + node->right) / 2.0f, (node->top + node->bottom) / 2.0f, (node->front + node->back) / 2.0f));
 	node->outline->GetTransform()->SetScale(glm::vec3((node->right - node->left), (node->top - node->bottom), (node->front - node->back)));
 	node->outline->SetPhysicsObject(std::make_shared<PhysicsObject>(node->outline->GetTransform(), PhysicsLayers::Trigger, 0.0f, false, false));
+	//std::cout << outline->GetTransform()->GetPosition().x << std::endl;//std::cout << outline->GetTransform()->GetPosition().x << std::endl;
 
 	return node;
 }
@@ -255,6 +251,28 @@ void OctTreeManager::ActivateChildren(OctTreeNode* parent)
 	ActivateNode(_octTree[parent->children[5]]);
 	ActivateNode(_octTree[parent->children[6]]);
 	ActivateNode(_octTree[parent->children[7]]);
+
+}
+
+void OctTreeManager::despawnShapes() {
+	
+	for (int i = _octTree.size() - 1; i >= 0; i--)
+	{
+		if (_octTree[i]->active) {
+			_octTree[i]->outline->Despawn();
+		}
+	}
+	
+}
+
+void OctTreeManager::spawnShapes() {
+
+	for (int i = 0; i < _octTree.size(); i++)
+	{
+		if (_octTree[i]->active) {
+			_octTree[i]->outline->Spawn();
+		}
+	}
 
 }
 

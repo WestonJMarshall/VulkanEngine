@@ -41,7 +41,7 @@ public:
 
 	static void InitOctTree(float left, float right, float top, float bottom, float front, float back, unsigned int maxDepth, unsigned int maxPerNode);
 
-	static void UpdateOctTree();
+	static void UpdateOctTree(bool update);
 
 	static void AddShape(std::shared_ptr<GameObject> shape);
 
@@ -50,6 +50,10 @@ public:
 	static const std::vector<std::shared_ptr<GameObject>>& GetNearbyShapes(std::shared_ptr<GameObject> shape);
 
 	static void ResetTree();
+
+	static void despawnShapes();
+
+	static void spawnShapes();
 
 private:
 
