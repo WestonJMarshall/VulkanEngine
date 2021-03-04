@@ -152,7 +152,7 @@ public:
 
 	void destroyLines(int count)
 	{
-		DebugManager::GetInstance()->RemoveAllShapes(count);
+		DebugManager::GetInstance()->RemoveAllShapes();
 	}
 
 

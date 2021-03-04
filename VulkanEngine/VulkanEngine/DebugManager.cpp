@@ -267,6 +267,31 @@ void DebugManager::RemoveShape(std::shared_ptr<Mesh> mesh, int index)
 	}
 }
 
+void DebugManager::RemoveAllShapes()
+{
+
+	if (enableValidationLayers)
+	{
+		std::shared_ptr<Mesh> mesh = EntityManager::GetInstance()->GetMeshes()[MeshTypes::Line];
+		
+		
+			for (int i = 0; i < debugShapes[mesh].size(); i++)
+			{
+				std::cout << "Line: " << debugShapes[mesh][i] << std::endl;
+				//if there are lines
+				//std::cout << debugShapes[mesh].size() << std::endl;
+				if (debugShapes[mesh][i]) 
+				{
+					instanceBufferDirty[mesh] = true;
+					mesh->RemoveInstance(debugShapes[mesh][i]->meshID);
+					debugShapes[mesh][i] = nullptr;
+				}
+			}
+		
+
+	}
+}
+
 void DebugManager::AddShape(std::shared_ptr<Mesh> mesh, std::shared_ptr<DebugShape> shape)
 {
 	if (enableValidationLayers)

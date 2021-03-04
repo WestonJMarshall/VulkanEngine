@@ -13,6 +13,9 @@ namespace Controls {
 		Exit,
 		LeftClick,
 		RightClick,
+		KDTreeTog,
+		QTreeTog,
+		OTreeTog,
 		ToggleDebug,
 		ControlCount
 	};

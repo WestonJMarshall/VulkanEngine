@@ -49,6 +49,8 @@ public:
 
 	static const std::vector<std::shared_ptr<GameObject>>& GetNearbyShapes(std::shared_ptr<GameObject> shape);
 
+	static void ResetTree();
+
 private:
 
 	static void AddShape(std::shared_ptr<GameObject> shape, int startingNode);
@@ -62,8 +64,6 @@ private:
 	static void ActivateChildren(OctTreeNode* parent);
 
 	static void DeactivateNode(OctTreeNode* node);
-
-	static void ResetTree();
 
 	static void ActivateNode(OctTreeNode* node);
 

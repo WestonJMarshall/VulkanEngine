@@ -184,8 +184,8 @@ void EntityManager::Draw(uint32_t imageIndex, VkCommandBuffer* commandBuffer)
 
                 //Add the color instance buffer only for the debug shapes
                 VkBuffer colorBuffer[1];
-                if (DebugManager::GetInstance()->GetInstanceBuffers().count(mesh) != 0) {
-                     colorBuffer[0] = DebugManager::GetInstance()->GetInstanceBuffers()[mesh]->GetBuffer();
+                if (mesh->GetMaterial()->wireframe == true) {
+                     colorBuffer[0] = mesh->GetVertexBuffer()->GetBuffer();
                     vkCmdBindVertexBuffers(*commandBuffer, 2, 1, colorBuffer, offsets);
                 }
 

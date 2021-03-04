@@ -8,12 +8,16 @@ class GameManager
 private:
 	static GameManager* instance;
 
-	std::vector<std::shared_ptr<GameObject>> gameObjects;
+	
 	std::vector<std::shared_ptr<Light>> lights;
 
 	float cameraSpeed = 2.5f;
 	bool lockCamera = true;
 public:
+	int maxCount = 5;
+	float Range = 2.0f;
+	bool activeOctTree = false;
+	std::vector<std::shared_ptr<GameObject>> gameObjects;
 #pragma region Singleton
 
 	static GameManager* GetInstance();
@@ -37,6 +41,9 @@ public:
 
 	void Init();
 	void Update();
+	void CreateKDTree();
+	void CreateQuadTree();
+	void CreateOctTree();
 
 #pragma endregion
 };

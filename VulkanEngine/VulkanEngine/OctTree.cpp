@@ -4,6 +4,7 @@
 #include "PhysicsObject.h"
 #include "PhysicsManager.h"
 #include "EntityManager.h"
+#include "GameManager.h"
 #include <stack>
 
 std::vector<OctTreeNode*> OctTreeManager::_octTree = std::vector<OctTreeNode*>();
@@ -56,11 +57,12 @@ void OctTreeManager::AddShape(std::shared_ptr<GameObject> shape) {
 // during the init function.
 void OctTreeManager::DumpData()
 {
-	int i;
-	while ((i = _octTree.size()) > 0) {
-		delete _octTree[i - 1];
-		_octTree.pop_back();
+	for (unsigned int i = 0; i < _octTree.size(); i++)
+	{
+		ResetTree();
 	}
+
+	_octTree.clear();
 }
 
 // Retrieves all the shapes that share a node with the shape passed in. It uses a method similar to when a shape is being
@@ -218,6 +220,7 @@ OctTreeNode* OctTreeManager::InitNode(int depth, int parentIndex, int childNum, 
 
 	//make wireframe gameobject for now(?) def not doing rendershape
 	std::shared_ptr<GameObject> outline = std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::WireCube]);
+	//GameManager::GetInstance()->gameObjects.push_back(outline);
 	node->outline = outline;
 
 
