@@ -4,7 +4,8 @@
 #define OBJECT_COLLIDER(object) (object.lock()->GetPhysicsObject()->GetCollider())
 #define OBJECT_PHYSICS(object) (object.lock()->GetPhysicsObject())
 
-////Public
+#define VEC3ZERO glm::vec3(0.0f, 0.0f, 0.0f)
+#define VEC3MIN glm::vec3(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min())
 
 BinaryPartitionTree::BinaryPartitionTree()
 {
@@ -18,6 +19,8 @@ int BinaryPartitionTree::Initialize(int maxSubdivisions, int minToSubdivide)
 	maxSubdivisions = maxSubdivisions;
 	minToSubdivide = minToSubdivide;
 	subdivisionLevel = 0;
+	indexCount = std::make_shared<int>(0);
+	index = 0;
 	meanContentsValue = 0.0f;
 
 	children.child1 = nullptr;
@@ -48,6 +51,8 @@ int BinaryPartitionTree::Fill(std::shared_ptr<GameObject> gameObject)
 	//Add the instances to the bsp, resize, then do nothing else
 	objects.push_back(gameObject);
 	BSP_Basic_Resize(gameObject);
+
+	gameObject->GetPhysicsObject()->AddDimension(index);
 
 	return 1;
 }
@@ -82,8 +87,6 @@ int BinaryPartitionTree::Draw()
 {
 	return 1;
 }
-
-////Private
 
 void Down_X(std::shared_ptr<BinaryPartitionTree> bsp)
 {
@@ -131,6 +134,9 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 
 		for (auto& i : objects)
 		{
+			//Set dimensions 
+			//i.lock().get()->GetPhysicsObject()->
+
 			//if the bsp's child1 collides with the bounding box if the instance
 			//add the instance to the child bsp, and removed from parent bsp
 			CollisionData data = {};
@@ -141,7 +147,7 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 			}
 			//if the instance does not collide with the child1 bsp, assume the
 			//instance collides with the child2 bsp
-			else if(PhysicsManager::GetInstance()->CheckCollision(OBJECT_PHYSICS(i), children.child2->bounds, data))
+			if(PhysicsManager::GetInstance()->CheckCollision(OBJECT_PHYSICS(i), children.child2->bounds, data))
 			{
 				children.child2->Fill(i.lock());
 			}
@@ -149,64 +155,76 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 
 		objects.clear();
 
-		BSP_Distribute_Down_Specific(children.child1);
-		BSP_Distribute_Down_Specific(children.child2);
-	}
-}
-
-void BinaryPartitionTree::BSP_Distribute_Down_Specific(std::shared_ptr<BinaryPartitionTree> bsp)
-{
-	//Average the position values of this node's instances,
-	//so this node will split in the middle of all its instances along the appropriate axis
-	distributionFunction[(int)bsp.get()->splitType](bsp);
-
-	//Subdivide
-	if (bsp.get()->objects.size() > bsp.get()->minToSubdivide && bsp.get()->subdivisionLevel < bsp.get()->maxSubdivisions)
-	{
-		BSP_Generate_Children_Specific(bsp);
-
-		for (auto& i : objects)
-		{
-			//FIX
-
-			//if the bsp's child1 collides with the bounding box if the instance
-			//add the instance to the child bsp, and removed from parent bsp
-			//if (Bounding_Box_Collision(i->boundingBox, bsp->children.child1->boundingBox))
-			//{
-			//	BSP_Fill(i);
-			//}
-			//if the instance does not collide with the child1 bsp, assume the
-			//instance collides with the child2 bsp
-			//else
-			//{
-			//	BSP_Fill(i);
-			//}
-		}
-
-		bsp.get()->objects.clear();
-
-		BSP_Distribute_Down_Specific(bsp.get()->children.child1);
-		BSP_Distribute_Down_Specific(bsp.get()->children.child2);
+		children.child1->BSP_Distribute_Down();
+		children.child2->BSP_Distribute_Down();
 	}
 }
 
 void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObject)
 {
-	//WIP !!!!!!!!!!!!!!!!!!!!!!! WIP
-
 	//If this is the head node and the instance is outside of its bounds, make it bigger
 	if (subdivisionLevel == 0)
 	{
-		//#define RESIZE(dimension, operator) \
-		//	if (gameObject.get()->GetTransform().get()->GetPosition().dimension < bsp->boundingBox.left) { bsp->boundingBox.left = instance->boundingBox.left - std::numeric_limits<float>::epsilon(); }
-		//
-		//
-		//if (gameObject.get()->GetTransform().get()->GetPosition().x < bsp->boundingBox.left) { bsp->boundingBox.left = instance->boundingBox.left - std::numeric_limits<float>::epsilon(); }
-		//if (gameObject.boundingBox.right > bsp->boundingBox.right) { bsp->boundingBox.right = instance->boundingBox.right + std::numeric_limits<float>::epsilon(); }
-		//if (gameObject.boundingBox.bottom < bsp->boundingBox.bottom) { bsp->boundingBox.bottom = instance->boundingBox.bottom - std::numeric_limits<float>::epsilon(); }
-		//if (gameObject.boundingBox.top > bsp->boundingBox.top) { bsp->boundingBox.top = instance->boundingBox.top + std::numeric_limits<float>::epsilon(); }
-		//if (gameObject.boundingBox.back < bsp->boundingBox.back) { bsp->boundingBox.back = instance->boundingBox.back - std::numeric_limits<float>::epsilon(); }
-		//if (gameObject.boundingBox.front > bsp->boundingBox.front) { bsp->boundingBox.front = instance->boundingBox.front + std::numeric_limits<float>::epsilon(); }
+		Collider* bspColliderTemp = &*bounds->GetCollider();
+		AABBCollider* bspCollider = static_cast<AABBCollider*>(bspColliderTemp);
+
+		Collider* objectColliderTemp = &*gameObject->GetPhysicsObject()->GetCollider();
+		AABBCollider* objectCollider = static_cast<AABBCollider*>(objectColliderTemp);
+
+		glm::vec3 bspPosition = bspCollider->GetTransform()->GetPosition();
+		glm::vec3 objectPosition = objectCollider->GetTransform()->GetPosition();
+
+		glm::vec3 bspExtents = bspCollider->GetExtents();
+		glm::vec3 objectExtents = objectCollider->GetExtents();
+
+		if (objects.size() == 0)
+		{
+			SetBounds(objectPosition, objectExtents);
+			return;
+		}
+
+		if (bspPosition.x + bspExtents.x > objectPosition.x - objectExtents.x)
+		{
+			float deltaX = glm::abs((bspPosition.x + bspExtents.x) - (objectPosition.x - objectExtents.x));
+			SetBounds(
+				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
+				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
+		}
+		if (bspPosition.x - bspExtents.x < objectPosition.x + objectExtents.x)
+		{
+			float deltaX = glm::abs((bspPosition.x - bspExtents.x) - (objectPosition.x + objectExtents.x));
+			SetBounds(
+				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
+				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
+		}
+		if (bspPosition.y + bspExtents.y > objectPosition.y - objectExtents.y)
+		{
+			float deltaY = glm::abs((bspPosition.y + bspExtents.y) - (objectPosition.y - objectExtents.y));
+			SetBounds(
+				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
+				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
+		}
+		if (bspPosition.y - bspExtents.y < objectPosition.y + objectExtents.y)
+		{
+			float deltaY = glm::abs((bspPosition.y - bspExtents.y) - (objectPosition.y + objectExtents.y));
+			SetBounds(
+				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
+				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
+		}
+		if (bspPosition.z + bspExtents.z > objectPosition.z - objectExtents.z)
+		{
+			float deltaZ = glm::abs((bspPosition.z + bspExtents.z) - (objectPosition.z - objectExtents.z));
+			SetBounds(
+				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
+				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
+		}
+		if (bspPosition.z - bspExtents.z < objectPosition.z + objectExtents.z)
+		{
+			float deltaZ = glm::abs((bspPosition.z - bspExtents.z) - (objectPosition.z + objectExtents.z));
+			SetBounds(
+				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
+				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
+		}
 	}
 }
 
@@ -218,45 +236,20 @@ void BinaryPartitionTree::BSP_Collect_Children(std::shared_ptr<std::vector<std::
 		//and add them to the childInstances vector
 		for (auto& i : children.child1->objects)
 		{
-			childGameObjects.get()->push_back(i.lock());
+			childGameObjects->push_back(i.lock());
 		}
 		//recursively call the function to traves the tree of child bsps,
 		//and collect their children, function continues past recursive call
-		BSP_Collect_Children_Specific(children.child1, childGameObjects);
+		children.child1->BSP_Collect_Children(childGameObjects);
 
 		//do the same for child2 as above
 		for (auto& i : children.child2->objects)
 		{
-			childGameObjects.get()->push_back(i.lock());
+			childGameObjects->push_back(i.lock());
 		}
 		//recursively call the function to traves the tree of child bsps,
 		//and collect their children, function continues past recursive call
-		BSP_Collect_Children_Specific(children.child2, childGameObjects);
-	}
-}
-
-void BinaryPartitionTree::BSP_Collect_Children_Specific(std::shared_ptr<BinaryPartitionTree> bsp, std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects)
-{
-	if (bsp->children.child1 != nullptr)
-	{
-		//while child1 exits, loop through the child and get all the instances
-		//and add them to the childInstances vector
-		for (auto& i : bsp->children.child1->objects)
-		{
-			childGameObjects.get()->push_back(i.lock());
-		}
-		//recursively call the function to traves the tree of child bsps,
-		//and collect their children, function continues past recursive call
-		BSP_Collect_Children_Specific(bsp->children.child1, childGameObjects);
-
-		//do the same for child2 as above
-		for (auto& i : bsp->children.child2->objects)
-		{
-			childGameObjects.get()->push_back(i.lock());
-		}
-		//recursively call the function to traves the tree of child bsps,
-		//and collect their children, function continues past recursive call
-		BSP_Collect_Children_Specific(bsp->children.child2, childGameObjects);
+		children.child2->BSP_Collect_Children(childGameObjects);
 	}
 }
 
@@ -264,124 +257,91 @@ void BinaryPartitionTree::BSP_Generate_Children()
 {
 	float splitLoc = meanContentsValue / objects.size();
 
-	std::shared_ptr<BinaryPartitionTree> child1 = std::make_shared<BinaryPartitionTree>();
-	child1.get()->Initialize(maxSubdivisions, minToSubdivide);
-	child1.get()->parent = std::make_shared<BinaryPartitionTree>(*this);
-	child1.get()->subdivisionLevel = subdivisionLevel + 1;
+	Collider* bspColliderTemp = &*bounds->GetCollider();
+	AABBCollider* bspCollider = static_cast<AABBCollider*>(bspColliderTemp);
 
-	//FIX
-	//child1->boundingBox.left = bsp->boundingBox.left;
-	//child1->boundingBox.right = bsp->boundingBox.right;
-	//child1->boundingBox.front = bsp->boundingBox.front;
-	//child1->boundingBox.back = bsp->boundingBox.back;
-	//child1->boundingBox.top = bsp->boundingBox.top;
-	//child1->boundingBox.bottom = bsp->boundingBox.bottom;
+	glm::vec3 bspPosition = bspCollider->GetTransform()->GetPosition();
+	glm::vec3 bspExtents = bspCollider->GetExtents();
+
+	std::shared_ptr<BinaryPartitionTree> child1 = std::make_shared<BinaryPartitionTree>();
+	child1->Initialize(maxSubdivisions, minToSubdivide);
+	child1->parent = std::make_shared<BinaryPartitionTree>(*this);
+	child1->subdivisionLevel = subdivisionLevel + 1;
+	child1->indexCount = indexCount;
+	++*child1->indexCount.get();
+	child1->index = *indexCount.get();
 
 	std::shared_ptr<BinaryPartitionTree> child2 = std::make_shared<BinaryPartitionTree>();
-	child2.get()->Initialize(maxSubdivisions, minToSubdivide);
-	child2.get()->parent = std::make_shared<BinaryPartitionTree>(*this);
-	child2.get()->subdivisionLevel = subdivisionLevel + 1;
-
-	//FIX
-	//child2->boundingBox.left = bsp->boundingBox.left;
-	//child2->boundingBox.right = bsp->boundingBox.right;
-	//child2->boundingBox.front = bsp->boundingBox.front;
-	//child2->boundingBox.back = bsp->boundingBox.back;
-	//child2->boundingBox.top = bsp->boundingBox.top;
-	//child2->boundingBox.bottom = bsp->boundingBox.bottom;
+	child2->Initialize(maxSubdivisions, minToSubdivide);
+	child2->parent = std::make_shared<BinaryPartitionTree>(*this);
+	child2->subdivisionLevel = subdivisionLevel + 1;
+	child2->indexCount = indexCount;
+	++*child2->indexCount.get();
+	child2->index = *indexCount.get();
 
 	//depending on the split direction, set the children bsp's values 
 	//to the split location and iterate to the next enum value of split
 	//direction, the order is LeftRight->FrontBack->TopBottom
 	if (splitType == BSPSplitDirection::X)
 	{
-		child1.get()->splitType = BSPSplitDirection::Y;
-		//child1->boundingBox.right = splitLoc;
+		child1->splitType = BSPSplitDirection::Y;
+		child2->splitType = BSPSplitDirection::Y;
 
-		child2.get()->splitType = BSPSplitDirection::Y;
-		//child2->boundingBox.left = splitLoc;
+		float xPos = splitLoc + (((bspPosition.x + bspExtents.x) - splitLoc) / 2.0f);
+		float xExtent = bspExtents.x - xPos;
+
+		child1->SetBounds(
+			glm::vec3(xPos, bspPosition.y, bspPosition.z),
+			glm::vec3(xExtent, bspExtents.y, bspExtents.z));
+
+		xPos = splitLoc + (((bspPosition.x - bspExtents.x) - splitLoc) / 2.0f);
+		xExtent = splitLoc - xPos;
+
+		child2->SetBounds(
+			glm::vec3(xPos, bspPosition.y, bspPosition.z),
+			glm::vec3(xExtent, bspExtents.y, bspExtents.z));
 	}
 	else if (splitType == BSPSplitDirection::Y)
 	{
-		child1.get()->splitType = BSPSplitDirection::Z;
-		//child1->boundingBox.top = splitLoc;
+		child1->splitType = BSPSplitDirection::Z;
+		child2->splitType = BSPSplitDirection::Z;
 
-		child2.get()->splitType = BSPSplitDirection::Z;
-		//child2->boundingBox.bottom = splitLoc;
+		float yPos = splitLoc + (((bspPosition.y + bspExtents.y) - splitLoc) / 2.0f);
+		float yExtent = bspExtents.y - yPos;
+
+		child1->SetBounds(
+			glm::vec3(bspPosition.x, yPos, bspPosition.z),
+			glm::vec3(bspExtents.x, yExtent, bspExtents.z));
+
+		yPos = splitLoc + (((bspPosition.y - bspExtents.y) - splitLoc) / 2.0f);
+		yExtent = splitLoc - yPos;
+
+		child2->SetBounds(
+			glm::vec3(bspPosition.x, yPos, bspPosition.z),
+			glm::vec3(bspExtents.x, yExtent, bspExtents.z));
 	}
 	else
 	{
-		child1.get()->splitType = BSPSplitDirection::X;
-		//child1->boundingBox.front = splitLoc;
+		child1->splitType = BSPSplitDirection::X;
+		child2->splitType = BSPSplitDirection::X;
 
-		child2.get()->splitType = BSPSplitDirection::X;
-		//child2->boundingBox.back = splitLoc;
+		float zPos = splitLoc + (((bspPosition.z + bspExtents.z) - splitLoc) / 2.0f);
+		float zExtent = bspExtents.z - zPos;
+
+		child1->SetBounds(
+			glm::vec3(bspPosition.x, bspPosition.y, zPos),
+			glm::vec3(bspExtents.x, bspExtents.y, zExtent));
+
+		zPos = splitLoc + (((bspPosition.z - bspExtents.z) - splitLoc) / 2.0f);
+		zExtent = splitLoc - zPos;
+
+		child2->SetBounds(
+			glm::vec3(bspPosition.x, bspPosition.y, zPos),
+			glm::vec3(bspExtents.x, bspExtents.y, zExtent));
 	}
 
 	children.child1 = child1;
 	children.child2 = child2;
-}
-
-void BinaryPartitionTree::BSP_Generate_Children_Specific(std::shared_ptr<BinaryPartitionTree> bsp)
-{
-	float splitLoc = bsp.get()->meanContentsValue / bsp.get()->objects.size();
-
-	std::shared_ptr<BinaryPartitionTree> child1 = std::make_shared<BinaryPartitionTree>();
-	child1.get()->Initialize(bsp.get()->maxSubdivisions, bsp.get()->minToSubdivide);
-	child1.get()->parent = std::make_shared<BinaryPartitionTree>(*this);
-	child1.get()->subdivisionLevel = bsp.get()->subdivisionLevel + 1;
-
-	//FIX
-	//child1->boundingBox.left = bsp->boundingBox.left;
-	//child1->boundingBox.right = bsp->boundingBox.right;
-	//child1->boundingBox.front = bsp->boundingBox.front;
-	//child1->boundingBox.back = bsp->boundingBox.back;
-	//child1->boundingBox.top = bsp->boundingBox.top;
-	//child1->boundingBox.bottom = bsp->boundingBox.bottom;
-
-	std::shared_ptr<BinaryPartitionTree> child2 = std::make_shared<BinaryPartitionTree>();
-	child2.get()->Initialize(bsp.get()->maxSubdivisions, bsp.get()->minToSubdivide);
-	child2.get()->parent = std::make_shared<BinaryPartitionTree>(*this);
-	child2.get()->subdivisionLevel = bsp.get()->subdivisionLevel + 1;
-
-	//FIX
-	//child2->boundingBox.left = bsp->boundingBox.left;
-	//child2->boundingBox.right = bsp->boundingBox.right;
-	//child2->boundingBox.front = bsp->boundingBox.front;
-	//child2->boundingBox.back = bsp->boundingBox.back;
-	//child2->boundingBox.top = bsp->boundingBox.top;
-	//child2->boundingBox.bottom = bsp->boundingBox.bottom;
-
-	//depending on the split direction, set the children bsp's values 
-	//to the split location and iterate to the next enum value of split
-	//direction, the order is LeftRight->FrontBack->TopBottom
-	if (bsp.get()->splitType == BSPSplitDirection::X)
-	{
-		child1.get()->splitType = BSPSplitDirection::Y;
-		//child1->boundingBox.right = splitLoc;
-
-		child2.get()->splitType = BSPSplitDirection::Y;
-		//child2->boundingBox.left = splitLoc;
-	}
-	else if (bsp.get()->splitType == BSPSplitDirection::Y)
-	{
-		child1.get()->splitType = BSPSplitDirection::Z;
-		//child1->boundingBox.top = splitLoc;
-
-		child2.get()->splitType = BSPSplitDirection::Z;
-		//child2->boundingBox.bottom = splitLoc;
-	}
-	else
-	{
-		child1.get()->splitType = BSPSplitDirection::X;
-		//child1->boundingBox.front = splitLoc;
-
-		child2.get()->splitType = BSPSplitDirection::X;
-		//child2->boundingBox.back = splitLoc;
-	}
-
-	bsp.get()->children.child1 = child1;
-	bsp.get()->children.child2 = child2;
 }
 
 void BinaryPartitionTree::BSP_Clear_Node(bool root)
@@ -419,15 +379,14 @@ void BinaryPartitionTree::BSP_Clear_Node_Specific(std::shared_ptr<BinaryPartitio
 
 void BinaryPartitionTree::BSP_Clear_Resizing()
 {
-	//WIP !!!!!!!!!!!!!!!!!!!!!!! WIP
+	SetBounds(VEC3MIN, VEC3MIN);
+}
 
-	//Remove Sizing
-	//bounds.left = std::numeric_limits<float>::max();
-	//bounds.right = std::numeric_limits<float>::min();
-	//bounds.back = std::numeric_limits<float>::max();
-	//bounds.front = std::numeric_limits<float>::min();
-	//bounds.bottom = std::numeric_limits<float>::max();
-	//bounds.top = std::numeric_limits<float>::min();
+void BinaryPartitionTree::SetBounds(glm::vec3 center, glm::vec3 extents)
+{
+	bounds->GetTransform()->SetPosition(center);
+	Collider* colliderTemp = &*bounds->GetCollider();
+	static_cast<AABBCollider*>(colliderTemp)->SetExtents(extents);
 }
 
 void BinaryPartitionTree::BSP_Place_Into(std::shared_ptr<GameObject> gameObject)

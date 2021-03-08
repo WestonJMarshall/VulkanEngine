@@ -16,6 +16,18 @@ public:
 	void SetMeansContentsValue(float value) { meanContentsValue = value; }
 	float GetMeansContentsValue() { return meanContentsValue; }
 
+	void SetBounds(glm::vec3 center, glm::vec3 extents);
+
+	//BSP specific functions -------------------------------------------
+
+	//Will appropriately size each BSP node if they
+	//have more instances than needed to split 
+	void BSP_Distribute_Down();
+
+	//Collects all of the instances in the BSP's children and
+	//puts them in childInstances
+	void BSP_Collect_Children(std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects);
+
 private:
 	//Helper classes
 	enum class BSPSplitDirection
@@ -35,6 +47,9 @@ private:
 
 	bool initialized = false;
 
+	unsigned int index;
+	std::shared_ptr<int> indexCount;
+
 	BSPSplitDirection splitType;
 
 	unsigned int subdivisionLevel;
@@ -48,24 +63,11 @@ private:
 
 	float meanContentsValue; //determines where the BSP should split
 
-	//BSP specific functions -------------------------------------------
-
-	//Will appropriately size each BSP node if they
-	//have more instances than needed to split 
-	void BSP_Distribute_Down();
-	void BSP_Distribute_Down_Specific(std::shared_ptr<BinaryPartitionTree> bsp);
-
 	//Resize a root node with no children, nothing else
 	void BSP_Basic_Resize(std::shared_ptr<GameObject> gameObject);
 
-	//Collects all of the instances in the BSP's children and
-	//puts them in childInstances
-	void BSP_Collect_Children(std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects);
-	void BSP_Collect_Children_Specific(std::shared_ptr<BinaryPartitionTree> bsp, std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects);
-
 	//Self explainatory
 	void BSP_Generate_Children();
-	void BSP_Generate_Children_Specific(std::shared_ptr<BinaryPartitionTree> bsp);
 
 	//Deletes all of the data in this node and all nodes below
 	void BSP_Clear_Node(bool root = true);
