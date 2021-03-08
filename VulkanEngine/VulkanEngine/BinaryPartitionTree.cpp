@@ -9,15 +9,15 @@
 
 BinaryPartitionTree::BinaryPartitionTree()
 {
-
+	objects = std::vector<std::weak_ptr<GameObject>>();
 }
 
 int BinaryPartitionTree::Initialize(int maxSubdivisions, int minToSubdivide)
 {
 	splitType = BSPSplitDirection::X;
 
-	maxSubdivisions = maxSubdivisions;
-	minToSubdivide = minToSubdivide;
+	this->maxSubdivisions = maxSubdivisions;
+	this->minToSubdivide = minToSubdivide;
 	subdivisionLevel = 0;
 	indexCount = std::make_shared<int>(0);
 	index = 0;
@@ -62,12 +62,12 @@ int BinaryPartitionTree::Generate()
 	if (!initialized) return 0;
 
 	//Take all other instances below this node and add it to this one, then delete all child nodes
-	std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects;
+	std::shared_ptr<std::vector<std::shared_ptr<GameObject>>> childGameObjects = std::shared_ptr<std::vector<std::shared_ptr<GameObject>>>(new std::vector<std::shared_ptr<GameObject>>());
 	BSP_Collect_Children(childGameObjects);
 
 	for (auto& i : objects)
 	{
-		childGameObjects.get()->push_back(i.lock());
+		childGameObjects->push_back(i.lock());
 	}
 
 	//Remove all instance data in this node and below. Now all instances will be stored in 'childInstances' alone
@@ -88,33 +88,33 @@ int BinaryPartitionTree::Draw()
 	return 1;
 }
 
-void Down_X(std::shared_ptr<BinaryPartitionTree> bsp)
+void Down_X(BinaryPartitionTree* bsp)
 {
 	for (auto& i : bsp->GetObjects())
 	{
 		//FIX AXIS?
 		ProjectionData data = OBJECT_COLLIDER(i)->ProjectOntoAxis(glm::vec3(1.0f, 0.0f, 0.0f));
-		bsp.get()->SetMeansContentsValue(bsp.get()->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
+		bsp->SetMeansContentsValue(bsp->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
 	}
 }
-void Down_Y(std::shared_ptr<BinaryPartitionTree> bsp)
+void Down_Y(BinaryPartitionTree* bsp)
 {
 	for (auto& i : bsp->GetObjects())
 	{
 		ProjectionData data = OBJECT_COLLIDER(i)->ProjectOntoAxis(glm::vec3(0.0f, 1.0f, 0.0f));
-		bsp.get()->SetMeansContentsValue(bsp.get()->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
+		bsp->SetMeansContentsValue(bsp->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
 	}
 }
-void Down_Z(std::shared_ptr<BinaryPartitionTree> bsp)
+void Down_Z(BinaryPartitionTree* bsp)
 {
 	for (auto& i : bsp->GetObjects())
 	{
 		ProjectionData data = OBJECT_COLLIDER(i)->ProjectOntoAxis(glm::vec3(0.0f, 0.0f, 1.0f));
-		bsp.get()->SetMeansContentsValue(bsp.get()->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
+		bsp->SetMeansContentsValue(bsp->GetMeansContentsValue() + ((data.minMax.x + data.minMax.y) / 2.0f));
 	}
 }
 
-void(*distributionFunction[3])(std::shared_ptr<BinaryPartitionTree> bsp) =
+void(*distributionFunction[3])(BinaryPartitionTree* bsp) =
 {
 	Down_X,
 	Down_Y,
@@ -125,7 +125,7 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 {
 	//Average the position values of this node's instances,
 	//so this node will split in the middle of all its instances along the appropriate axis
-	distributionFunction[(int)splitType](std::make_shared<BinaryPartitionTree>(*this));
+	distributionFunction[(int)splitType](this);
 
 	//Subdivide
 	if (objects.size() > minToSubdivide && subdivisionLevel < maxSubdivisions)
@@ -134,9 +134,6 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 
 		for (auto& i : objects)
 		{
-			//Set dimensions 
-			//i.lock().get()->GetPhysicsObject()->
-
 			//if the bsp's child1 collides with the bounding box if the instance
 			//add the instance to the child bsp, and removed from parent bsp
 			CollisionData data = {};
@@ -144,12 +141,14 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 			if (PhysicsManager::GetInstance()->CheckCollision(OBJECT_PHYSICS(i), children.child1->bounds, data))
 			{
 				children.child1->Fill(i.lock());
+				i.lock()->GetPhysicsObject()->RemoveDimension(index);
 			}
 			//if the instance does not collide with the child1 bsp, assume the
 			//instance collides with the child2 bsp
 			if(PhysicsManager::GetInstance()->CheckCollision(OBJECT_PHYSICS(i), children.child2->bounds, data))
 			{
 				children.child2->Fill(i.lock());
+				i.lock()->GetPhysicsObject()->RemoveDimension(index);
 			}
 		}
 
@@ -177,53 +176,65 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		glm::vec3 bspExtents = bspCollider->GetExtents();
 		glm::vec3 objectExtents = objectCollider->GetExtents();
 
-		if (objects.size() == 0)
+		if (objects.size() == 1)
 		{
 			SetBounds(objectPosition, objectExtents);
 			return;
 		}
 
-		if (bspPosition.x + bspExtents.x > objectPosition.x - objectExtents.x)
+		if (bspPosition.x + bspExtents.x < objectPosition.x + objectExtents.x)
 		{
-			float deltaX = glm::abs((bspPosition.x + bspExtents.x) - (objectPosition.x - objectExtents.x));
+			float deltaX = glm::abs((bspPosition.x + bspExtents.x) - (objectPosition.x + objectExtents.x));
 			SetBounds(
 				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
 				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
-		if (bspPosition.x - bspExtents.x < objectPosition.x + objectExtents.x)
+		if (bspPosition.x - bspExtents.x > objectPosition.x - objectExtents.x)
 		{
-			float deltaX = glm::abs((bspPosition.x - bspExtents.x) - (objectPosition.x + objectExtents.x));
+			float deltaX = glm::abs((bspPosition.x - bspExtents.x) - (objectPosition.x - objectExtents.x));
 			SetBounds(
 				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
 				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
-		if (bspPosition.y + bspExtents.y > objectPosition.y - objectExtents.y)
+		if (bspPosition.y + bspExtents.y < objectPosition.y + objectExtents.y)
 		{
-			float deltaY = glm::abs((bspPosition.y + bspExtents.y) - (objectPosition.y - objectExtents.y));
+			float deltaY = glm::abs((bspPosition.y + bspExtents.y) - (objectPosition.y + objectExtents.y));
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
 				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
-		if (bspPosition.y - bspExtents.y < objectPosition.y + objectExtents.y)
+		if (bspPosition.y - bspExtents.y > objectPosition.y - objectExtents.y)
 		{
-			float deltaY = glm::abs((bspPosition.y - bspExtents.y) - (objectPosition.y + objectExtents.y));
+			float deltaY = glm::abs((bspPosition.y - bspExtents.y) - (objectPosition.y - objectExtents.y));
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
 				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
-		if (bspPosition.z + bspExtents.z > objectPosition.z - objectExtents.z)
+		if (bspPosition.z + bspExtents.z < objectPosition.z + objectExtents.z)
 		{
-			float deltaZ = glm::abs((bspPosition.z + bspExtents.z) - (objectPosition.z - objectExtents.z));
+			float deltaZ = glm::abs((bspPosition.z + bspExtents.z) - (objectPosition.z + objectExtents.z));
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
 				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
-		if (bspPosition.z - bspExtents.z < objectPosition.z + objectExtents.z)
+		if (bspPosition.z - bspExtents.z > objectPosition.z - objectExtents.z)
 		{
-			float deltaZ = glm::abs((bspPosition.z - bspExtents.z) - (objectPosition.z + objectExtents.z));
+			float deltaZ = glm::abs((bspPosition.z - bspExtents.z) - (objectPosition.z - objectExtents.z));
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
 				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
+			bspPosition = bspCollider->GetTransform()->GetPosition();
+			bspExtents = bspCollider->GetExtents();
 		}
 	}
 }
@@ -346,7 +357,7 @@ void BinaryPartitionTree::BSP_Generate_Children()
 
 void BinaryPartitionTree::BSP_Clear_Node(bool root)
 {
-	if (initialized) return;
+	if (!initialized) return;
 
 	//Find children
 	if (children.child1 != nullptr)
@@ -364,7 +375,7 @@ void BinaryPartitionTree::BSP_Clear_Node(bool root)
 
 void BinaryPartitionTree::BSP_Clear_Node_Specific(std::shared_ptr<BinaryPartitionTree> bsp, bool root)
 {
-	if (bsp->initialized) return;
+	if (!bsp->initialized) return;
 
 	//Find children
 	if (bsp->children.child1 != nullptr)
@@ -384,7 +395,7 @@ void BinaryPartitionTree::BSP_Clear_Resizing()
 
 void BinaryPartitionTree::SetBounds(glm::vec3 center, glm::vec3 extents)
 {
-	bounds->GetTransform()->SetPosition(center);
+	bounds->GetCollider()->GetTransform()->SetPosition(center);
 	Collider* colliderTemp = &*bounds->GetCollider();
 	static_cast<AABBCollider*>(colliderTemp)->SetExtents(extents);
 }

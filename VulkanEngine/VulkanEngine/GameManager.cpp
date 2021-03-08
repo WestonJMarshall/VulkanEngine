@@ -77,7 +77,7 @@ void GameManager::Init()
     gameObjects[2]->SetName("FloatingCube");
 
     gameObjects[3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.95f, 2.5f, -1.5f)));
-    gameObjects[3]->SetPhysicsObject();
+    gameObjects[3]->SetPhysicsObject(PhysicsLayers::Dynamic,ColliderTypes::ARBB);
     gameObjects[3]->SetName("DynamicCube");
 
     gameObjects[4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 2.5f, 0.0f)));
@@ -98,6 +98,19 @@ void GameManager::Init()
         gameObjects[i]->Init();
         gameObjects[i]->Spawn();
     }
+
+    //Setup partitioning for static objects
+    std::unique_ptr<PartitionTree> bsp = std::unique_ptr<BinaryPartitionTree>(new BinaryPartitionTree());
+    bsp->Initialize(5, 2);
+
+    for (size_t i = 0; i < gameObjects.size(); i++) {
+        if (gameObjects[i]->GetPhysicsObject() != nullptr && gameObjects[i]->GetPhysicsObject()->GetPhysicsLayer() == PhysicsLayers::Static)
+        {
+            bsp->Fill(gameObjects[i]);
+        }
+    }
+
+    bsp->Generate();
 
     //Reset time so that it doesn't include initialization in totalTime
     Time::Reset();
