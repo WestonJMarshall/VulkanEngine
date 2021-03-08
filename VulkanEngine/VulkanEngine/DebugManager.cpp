@@ -269,25 +269,22 @@ void DebugManager::RemoveShape(std::shared_ptr<Mesh> mesh, int index)
 
 void DebugManager::RemoveAllShapes()
 {
-
+	std::shared_ptr<Mesh> mesh = EntityManager::GetInstance()->GetMeshes()[MeshTypes::Line];
 	if (enableValidationLayers)
 	{
-		std::shared_ptr<Mesh> mesh = EntityManager::GetInstance()->GetMeshes()[MeshTypes::Line];
-		
-		
+		std::cout << "DEBUG SIZE " << debugShapes[mesh].size() << std::endl;
 			for (int i = 0; i < debugShapes[mesh].size(); i++)
 			{
-
-				//if there are lines
-				//std::cout << debugShapes[mesh].size() << std::endl;
-				if (debugShapes[mesh][i]) 
-				{
+				if (debugShapes[mesh][i]->meshID) {
 					instanceBufferDirty[mesh] = true;
 					mesh->RemoveInstance(debugShapes[mesh][i]->meshID);
 					debugShapes[mesh][i] = nullptr;
+					
 				}
+				//}
 			}
 		
+			debugShapes[mesh].clear();
 
 	}
 }
@@ -297,14 +294,15 @@ void DebugManager::AddShape(std::shared_ptr<Mesh> mesh, std::shared_ptr<DebugSha
 	if (enableValidationLayers)
 	{
 		instanceBufferDirty[mesh] = true;
-
-		for (size_t i = 0; i < debugShapes[mesh].size(); i++) {
+		debugShapes[mesh].push_back(shape);
+		for (int i = 0; i < debugShapes[mesh].size(); i++) {
 			if (debugShapes[mesh][i] == nullptr) {
 				debugShapes[mesh][i] = shape;
+				std::cout << "shape added. " << debugShapes[mesh].size() << std::endl;
 				return;
 			}
 		}
-			std::cout << "line count: " << debugShapes[mesh].size() << std::endl;
+			//std::cout << "line count: " << debugShapes[mesh].size() << std::endl;
 		
 	}
 }

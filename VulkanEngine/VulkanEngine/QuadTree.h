@@ -15,6 +15,7 @@ class QuadTree
 
 	//Points stored in the quad
 	std::vector<glm::vec2> points;
+	
 	int lineCount = 0;
 	int pointCount = 0;
 
@@ -70,14 +71,22 @@ class QuadTree
 		linePoints.push_back(glm::vec2(topLeft.x + halfWidth, topLeft.y));
 		linePoints.push_back(glm::vec2(topLeft.x + halfWidth, bottomRight.y));
 
-		DebugManager::GetInstance()->DrawLine(glm::vec3(topLeft.x + halfWidth, topLeft.y, 0.0f), glm::vec3(topLeft.x + halfWidth, bottomRight.y, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
+		lineVectors.push_back(glm::vec3(topLeft.x + halfWidth, topLeft.y, 0.0f));
+		lineVectors.push_back(glm::vec3(topLeft.x + halfWidth, bottomRight.y, 0.0f));
+
+		//DebugManager::GetInstance()->DrawLine(glm::vec3(topLeft.x + halfWidth, topLeft.y, 0.0f), glm::vec3(topLeft.x + halfWidth, bottomRight.y, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
 		lineCount = lineCount + 1;
 
 		//horizontal line
 		linePoints.push_back(glm::vec2(topLeft.x, bottomRight.y + halfHeight));
 		linePoints.push_back(glm::vec2(bottomRight.x, bottomRight.y + halfHeight));
 
-		DebugManager::GetInstance()->DrawLine(glm::vec3(topLeft.x, bottomRight.y + halfHeight, 0.0f), glm::vec3(bottomRight.x, bottomRight.y + halfHeight, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
+		lineVectors.push_back(glm::vec3(topLeft.x, bottomRight.y + halfHeight, 0.0f));
+		lineVectors.push_back(glm::vec3(bottomRight.x, bottomRight.y + halfHeight, 0.0f));
+
+		std::cout << "size of linevector " << linePoints.size() << std::endl;
+		std::cout << "size of vecvec " << lineVectors.size() << std::endl;
+		//DebugManager::GetInstance()->DrawLine(glm::vec3(topLeft.x, bottomRight.y + halfHeight, 0.0f), glm::vec3(bottomRight.x, bottomRight.y + halfHeight, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
 		lineCount = lineCount + 1;
 
 		//Distribute points into chilfren
@@ -96,6 +105,7 @@ class QuadTree
 
 
 public:
+	std::vector<glm::vec3> lineVectors;
 	QuadTree()
 	{
 		topLeft = glm::vec2(-2.0f, 2.0f);
@@ -116,7 +126,7 @@ public:
 	}
 
 	//Recursive insert method for a point and a refernce to container holding quadtree render points
-	void Insert(glm::vec2 point, std::vector<glm::vec2>& linePoints, int maxCount)
+	void Insert(glm::vec2 point, std::vector<glm::vec2>& linePoints, int maxCount )
 	{
 		//if no point in quad, return
 		if (!InBounds(point)) {

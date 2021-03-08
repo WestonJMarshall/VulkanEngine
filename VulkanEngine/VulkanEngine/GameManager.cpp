@@ -12,8 +12,11 @@
 
 #define MshMngr MeshManager::GetInstance()
 QuadTree* quadTree;
+KD_tree* KDtree;
 std::vector<glm::vec2> linePoints;
 int entitycount = 25;
+bool octTreeDespawned = false;
+bool linesActive = false;
 
 
 
@@ -69,11 +72,11 @@ void GameManager::Init()
 
 	OctTreeManager::InitOctTree(-2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 4, 2);
 	OctTreeManager::despawnShapes();
-	KD_tree* tree;
+	
 	Points_Tree.clear();
 	quadTree = new QuadTree();
 	activeOctTree = true;
-	for (int i = 0; i < 75; i++) { //indexes 50 to 74, count of 75
+	for (int i = 0; i < 75; i++) { 
 
 		float randX = (float)rand() / (float)RAND_MAX;
 		float randRange = Range - -Range;
@@ -88,7 +91,13 @@ void GameManager::Init()
 
 		//set data, place position at random coords
 		gameObjects[i]->SetTransform(std::make_shared<Transform>(glm::vec3()));
-		gameObjects[i]->GetTransform()->SetPosition(glm::vec3(finalRandX, finalRandY, finalRandZ));
+		if (i >= 50 && i <= 75) {
+			gameObjects[i]->GetTransform()->SetPosition(glm::vec3(finalRandX, finalRandY, finalRandZ));
+			std::cout << "setting index " << i << std::endl;
+		}
+		else {
+			gameObjects[i]->GetTransform()->SetPosition(glm::vec3(finalRandX, finalRandY, 0));
+		}
 		gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
 		gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 		gameObjects[i]->SetPhysicsObject(std::make_shared<PhysicsObject>(gameObjects[i]->GetTransform(), PhysicsLayers::Trigger, 1.0f, false, false));
@@ -96,8 +105,7 @@ void GameManager::Init()
 	}
 
 	//make quadTree
-	std::cout << "DRAWING QUADTREE" << std::endl;
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < entitycount; i++)
 	{
 		point_body_x[i] = gameObjects[i]->GetTransform()->GetPosition().x;
 		point_body_y[i] = gameObjects[i]->GetTransform()->GetPosition().y;
@@ -147,18 +155,19 @@ void GameManager::Init()
 
 	//create the KD tree
 
-	tree = new KD_tree(Points_Tree);
-	tree->printInfo();
-	tree->printTree();
+	KDtree = new KD_tree(Points_Tree);
+	KDtree->printInfo();
+	KDtree->printTree();
 
 	//draw it using debug lines
-	drawKDTree(*(tree->get_Root()));
+	KDtree->drawKDTree(*(KDtree->get_Root()));
+	//drawKDTree(*(KDtree->get_Root()));
 
-	for (int i = 25; i < 50; i++)
+	for (int i = entitycount; i < entitycount*2; i++)
 	{
 		quadTree->Insert(gameObjects[i]->GetTransform()->GetPosition(), linePoints, maxCount);
 	}
-	for (int i = 50; i < 75; i++)
+	for (int i = entitycount*2; i < entitycount*3; i++)
 	{
 		OctTreeManager::AddShape(gameObjects[i]);
 	}
@@ -171,7 +180,7 @@ void GameManager::Init()
 	gameObjects[lastIndex]->SetName("Skybox");
 	gameObjects[lastIndex]->Spawn();
 
-    
+	CreateOctTree();
 }
 
 void GameManager::Update()
@@ -269,39 +278,88 @@ void GameManager::Update()
 
 void GameManager::CreateKDTree()
 {
-	OctTreeManager::despawnShapes();
-	for (int i = 0; i < gameObjects.size(); i++) {
-	   gameObjects[i]->Despawn();
-   }
-	for (int i = entitycount; i < entitycount*2; i++) {
+	if (octTreeDespawned == false) {
+		OctTreeManager::despawnShapes();
+	}
+	octTreeDespawned = true;
+	if (linesActive == true) {
+		DebugManager::GetInstance()->RemoveAllShapes();
+	}
+	linesActive = true;
+
+	for (int i = 0; i < KDtree->lineVectors.size(); i+=2)
+	{
+		if ((i + 1) < KDtree->lineVectors.size()) 
+		{
+			DebugManager::GetInstance()->DrawLine(KDtree->lineVectors[i], KDtree->lineVectors[i + 1], glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
+		}
+		
+	}
+	
+	for (int i = 0; i < entitycount; i++) {
 		gameObjects[i]->Spawn();
 	}
-	for (int i = entitycount*2; i < gameObjects.size(); i++) {
-		gameObjects[i]->Despawn();
+	for (int i = entitycount; i < gameObjects.size(); i++) {
+		if (gameObjects[i]->GetActive() == true) {
+			gameObjects[i]->Despawn();
+		}
 	}
+	
 }
 
 void GameManager::CreateOctTree()
 {
 	OctTreeManager::spawnShapes();
-	for (int i = entitycount*2; i < gameObjects.size(); i++) {
-		gameObjects[i]->Spawn();
-	}
-	for (int i = 0; i < entitycount*2; i++) {
-		gameObjects[i]->Despawn();
-	}
-}
+	octTreeDespawned = false;
 
-void GameManager::CreateQuadTree()
-{
-	OctTreeManager::despawnShapes();
-	for (int i = 0; i < entitycount; i++) {
-		gameObjects[i]->Spawn();
+	if (linesActive == true) {
+		DebugManager::GetInstance()->RemoveAllShapes();
 	}
-	for (int i = entitycount; i < gameObjects.size(); i++) {
-		gameObjects[i]->Despawn();
+	linesActive = false;
+	for (int i = 0; i < entitycount*2; i++) {
+		if (gameObjects[i]->GetActive() == true) {
+			gameObjects[i]->Despawn();
+		}
+		
+	}
+	for (int i = entitycount * 2; i < gameObjects.size(); i++) {
+		gameObjects[i]->Spawn();
 	}
 	
 }
+
+
+void GameManager::CreateQuadTree()
+{
+	if (octTreeDespawned == false) {
+		OctTreeManager::despawnShapes();
+	}
+	octTreeDespawned = true;
+	if (linesActive == true) {
+		DebugManager::GetInstance()->RemoveAllShapes();
+	}
+	linesActive = true;
+
+	//std::cout << "size of vector " << quadTree->Point.size() << std::endl;
+	for (int i = 0; i < linePoints.size(); i += 2)
+	{
+		DebugManager::GetInstance()->DrawLine(glm::vec3(linePoints[i].x, linePoints[i].y, 0.0f), glm::vec3(linePoints[i + 1].x, linePoints[i + 1].y, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), -1.0f);
+	}
+	for (int i = 0; i < gameObjects.size(); i++) {
+		if (gameObjects[i]->GetActive() == true) {
+			gameObjects[i]->Despawn();
+		}
+	}
+	for (int i = entitycount; i < entitycount * 2; i++) {
+		gameObjects[i]->Spawn();
+	}
+	for (int i = entitycount * 2; i < gameObjects.size(); i++) {
+		if (gameObjects[i]->GetActive() == true) {
+			gameObjects[i]->Despawn();
+		}
+	}
+}
+
+
 
 #pragma endregion

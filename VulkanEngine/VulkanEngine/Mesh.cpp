@@ -302,6 +302,7 @@ int Mesh::AddInstance(std::shared_ptr<Transform> value)
 
 	if (freeIndex == -1) {
 		instances.push_back(value);
+		instanceBufferDirty = true;
 		return (instances.size() - 1);
 	}
 	instances[freeIndex] = value;
