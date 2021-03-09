@@ -20,7 +20,9 @@ private:
 	bool lockCamera = true;
 public:
 #pragma region Singleton
-
+	int maxCount = 5;
+	float Range = 2.0f;
+	bool activeOctTree = false;
 	static GameManager* GetInstance();
 
 #pragma endregion
@@ -49,6 +51,10 @@ public:
 	/// Called once per frame, updates the gameobjects
 	/// </summary>
 	void Update();
+
+	void CreateKDTree();
+	void CreateQuadTree();
+	void CreateOctTree();
 
 #pragma endregion
 };

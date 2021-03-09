@@ -46,6 +46,10 @@ InputManager::InputManager()
     controls[Controls::LeftClick].SetKeyCode(VK_LBUTTON);
     controls[Controls::RightClick].SetKeyCode(VK_RBUTTON);
     controls[Controls::ToggleDebug].SetKeyCode(VK_F9);
+
+	controls[Controls::KDTreeTog].SetKeyCode('Z');
+	controls[Controls::QTreeTog].SetKeyCode('X');
+	controls[Controls::OTreeTog].SetKeyCode('C');
 }
 
 #pragma endregion

@@ -138,6 +138,8 @@ public:
 	/// <param name="index">The index of the shape to remove</param>
 	void RemoveShape(std::shared_ptr<Mesh> mesh, int index);
 
+	void RemoveAllShapes();
+
 	/// <summary>
 	/// Adds a debug shape the the list for the specified mesh
 	/// </summary>
