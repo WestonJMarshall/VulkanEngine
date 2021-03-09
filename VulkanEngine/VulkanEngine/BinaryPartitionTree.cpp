@@ -35,6 +35,8 @@ int BinaryPartitionTree::Initialize(int maxSubdivisions, int minToSubdivide)
 			false,
 			true);
 
+	bounds->AddDimension(0);
+
 	initialized = true;
 
 	//Remove children and parents if there are any
@@ -138,10 +140,17 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 			//add the instance to the child bsp, and removed from parent bsp
 			CollisionData data = {};
 
+			OBJECT_PHYSICS(i)->AddDimension(children.child1->index);
+			OBJECT_PHYSICS(i)->AddDimension(children.child2->index);
+
 			if (PhysicsManager::GetInstance()->CheckCollision(OBJECT_PHYSICS(i), children.child1->bounds, data))
 			{
 				children.child1->Fill(i.lock());
 				i.lock()->GetPhysicsObject()->RemoveDimension(index);
+			}
+			else
+			{
+				OBJECT_PHYSICS(i)->RemoveDimension(children.child1->index);
 			}
 			//if the instance does not collide with the child1 bsp, assume the
 			//instance collides with the child2 bsp
@@ -149,6 +158,10 @@ void BinaryPartitionTree::BSP_Distribute_Down()
 			{
 				children.child2->Fill(i.lock());
 				i.lock()->GetPhysicsObject()->RemoveDimension(index);
+			}
+			else
+			{
+				OBJECT_PHYSICS(i)->RemoveDimension(children.child2->index);
 			}
 		}
 
@@ -184,7 +197,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 
 		if (bspPosition.x + bspExtents.x < objectPosition.x + objectExtents.x)
 		{
-			float deltaX = glm::abs((bspPosition.x + bspExtents.x) - (objectPosition.x + objectExtents.x));
+			float deltaX = glm::abs((bspPosition.x + bspExtents.x) - (objectPosition.x + objectExtents.x)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
 				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
@@ -193,7 +206,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		}
 		if (bspPosition.x - bspExtents.x > objectPosition.x - objectExtents.x)
 		{
-			float deltaX = glm::abs((bspPosition.x - bspExtents.x) - (objectPosition.x - objectExtents.x));
+			float deltaX = glm::abs((bspPosition.x - bspExtents.x) - (objectPosition.x - objectExtents.x)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x + (deltaX / 2.0f), bspPosition.y, bspPosition.z),
 				glm::vec3(bspExtents.x + deltaX, bspExtents.y, bspExtents.z));
@@ -202,7 +215,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		}
 		if (bspPosition.y + bspExtents.y < objectPosition.y + objectExtents.y)
 		{
-			float deltaY = glm::abs((bspPosition.y + bspExtents.y) - (objectPosition.y + objectExtents.y));
+			float deltaY = glm::abs((bspPosition.y + bspExtents.y) - (objectPosition.y + objectExtents.y)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
 				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
@@ -211,7 +224,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		}
 		if (bspPosition.y - bspExtents.y > objectPosition.y - objectExtents.y)
 		{
-			float deltaY = glm::abs((bspPosition.y - bspExtents.y) - (objectPosition.y - objectExtents.y));
+			float deltaY = glm::abs((bspPosition.y - bspExtents.y) - (objectPosition.y - objectExtents.y)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y + (deltaY / 2.0f), bspPosition.z),
 				glm::vec3(bspExtents.x, bspExtents.y + deltaY, bspExtents.z));
@@ -220,7 +233,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		}
 		if (bspPosition.z + bspExtents.z < objectPosition.z + objectExtents.z)
 		{
-			float deltaZ = glm::abs((bspPosition.z + bspExtents.z) - (objectPosition.z + objectExtents.z));
+			float deltaZ = glm::abs((bspPosition.z + bspExtents.z) - (objectPosition.z + objectExtents.z)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
 				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
@@ -229,7 +242,7 @@ void BinaryPartitionTree::BSP_Basic_Resize(std::shared_ptr<GameObject> gameObjec
 		}
 		if (bspPosition.z - bspExtents.z > objectPosition.z - objectExtents.z)
 		{
-			float deltaZ = glm::abs((bspPosition.z - bspExtents.z) - (objectPosition.z - objectExtents.z));
+			float deltaZ = glm::abs((bspPosition.z - bspExtents.z) - (objectPosition.z - objectExtents.z)) + std::numeric_limits<float>().epsilon();
 			SetBounds(
 				glm::vec3(bspPosition.x, bspPosition.y, bspPosition.z + (deltaZ / 2.0f)),
 				glm::vec3(bspExtents.x, bspExtents.y, bspExtents.z + deltaZ));
@@ -281,6 +294,7 @@ void BinaryPartitionTree::BSP_Generate_Children()
 	child1->indexCount = indexCount;
 	++*child1->indexCount.get();
 	child1->index = *indexCount.get();
+	child1->bounds->AddDimension(child1->index);
 
 	std::shared_ptr<BinaryPartitionTree> child2 = std::make_shared<BinaryPartitionTree>();
 	child2->Initialize(maxSubdivisions, minToSubdivide);
@@ -289,6 +303,7 @@ void BinaryPartitionTree::BSP_Generate_Children()
 	child2->indexCount = indexCount;
 	++*child2->indexCount.get();
 	child2->index = *indexCount.get();
+	child2->bounds->AddDimension(child2->index);
 
 	//depending on the split direction, set the children bsp's values 
 	//to the split location and iterate to the next enum value of split
