@@ -231,10 +231,8 @@ OctTreeNode* OctTreeManager::InitNode(int depth, int parentIndex, int childNum, 
 	node->children[7] = base + 7;
 	node->parent = parentIndex;
 
-	node->outline->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3()));
-	node->outline->GetTransform()->SetPosition(glm::vec3((node->left + node->right) / 2.0f, (node->top + node->bottom) / 2.0f, (node->front + node->back) / 2.0f));
+	node->outline->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3((node->left + node->right) / 2.0f, (node->top + node->bottom) / 2.0f, (node->front + node->back) / 2.0f)));
 	node->outline->GetTransform()->SetScale(glm::vec3((node->right - node->left), (node->top - node->bottom), (node->front - node->back)));
-	node->outline->SetPhysicsObject(PhysicsLayers::Trigger, ColliderTypes::ARBB, 1.0f, false);
 	//std::cout << outline->GetTransform()->GetPosition().x << std::endl;//std::cout << outline->GetTransform()->GetPosition().x << std::endl;
 
 	return node;

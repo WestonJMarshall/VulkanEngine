@@ -8,7 +8,7 @@ class GameManager
 {
 private:
 	static GameManager* instance;
-
+	int entitycount = 25;
 	std::vector<std::shared_ptr<GameObject>> gameObjects;
 	std::vector<std::shared_ptr<GameObject>> octObjects;
 	std::vector<std::shared_ptr<Light>> lights;
