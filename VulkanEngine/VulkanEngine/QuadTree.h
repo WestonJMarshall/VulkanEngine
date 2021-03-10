@@ -29,7 +29,7 @@ class QuadTree
 
 	bool InBounds(glm::vec2 point)
 	{
-		//std::cout << topLeft.x << std::endl;
+		
 		return(point.x >= topLeft.x &&
 			point.x <= bottomRight.x &&
 			point.y >= bottomRight.y &&

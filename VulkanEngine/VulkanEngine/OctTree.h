@@ -5,7 +5,7 @@
 class InteractiveShape;
 class RenderShape;
 
-struct Collider
+struct OctCollider
 {
 	float width;
 	float height;
