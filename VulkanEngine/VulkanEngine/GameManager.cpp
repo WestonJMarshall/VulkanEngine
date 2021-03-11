@@ -194,10 +194,34 @@ void GameManager::Init()
 		OctTreeManager::AddShape(gameObjects[i]);
 	}
 
+	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+
+	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.0f, 0)));
+	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(5.0f, 0.5f, 1.0f));
+	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 1.0f, false);
+	gameObjects[gameObjects.size() - 3]->SetName("Floor");
+
+	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
+    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
+
+	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
+	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
+
+	gameObjects[gameObjects.size() - 3]->Init();
+	gameObjects[gameObjects.size() - 2]->Init();
+	gameObjects[gameObjects.size() - 1]->Init();
+	gameObjects[gameObjects.size() - 3]->Spawn();
+	gameObjects[gameObjects.size() - 2]->Spawn();
+	gameObjects[gameObjects.size() - 1]->Spawn();
+
 	//Reset time so that it doesn't include initialization in totalTime
 	Time::Reset();
-
-	CreateOctTree();
 }
 
 void GameManager::Update()
@@ -207,6 +231,9 @@ void GameManager::Update()
 	//Rotate Camera
 	//  Toggle camera lock on right click
 	OctTreeManager::UpdateOctTree(activeOctTree);
+	if (activeOctTree) {
+		OctTreeManager::despawnShapes();
+	}
 	activeOctTree = false;
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::KDTreeTog)) {
@@ -255,10 +282,10 @@ void GameManager::Update()
 		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
-		moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
-		moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
 	}
 
 	if (moveDirection.x != 0 || moveDirection.y != 0 || moveDirection.z != 0) {
@@ -274,10 +301,11 @@ void GameManager::Update()
 	//gameObjects[0]->GetTransform()->Rotate(glm::vec3(0.0f, 10.0f, 0.0f) * Time::GetDeltaTime());
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
-		//gameObjects[2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
 	}
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
-		//gameObjects[2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
 	}
 
 	//TODO: Remove when finished
@@ -285,14 +313,7 @@ void GameManager::Update()
 	//gameObjects[2]->GetPhysicsObject()->GetVelocityAtPoint(gameObjects[2]->GetTransform()->GetPosition() + glm::vec3(1, 0, 0));
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
-		//gameObjects[2]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 5000.0f, 0.0f));
-
-		//Spawn Object Sample Code:
-		/*std::shared_ptr<GameObject> newObject = std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Sphere]);
-		gameObjects.push_back(newObject);
-
-		newObject->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 2.5f, 0.0f)));
-		newObject->SetPhysicsObject(std::make_shared<PhysicsObject>(newObject->GetTransform(), PhysicsLayers::Dynamic, 1.0f, true, true));*/
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 5000.0f, 0.0f));
 	}
 
 	//Update Game Objects

@@ -199,6 +199,9 @@ void GuiManager::DrawGUI()
 		ImGui::Text("Controls:\n");
 		ImGui::Text(" WASDQE: Movement\n");
 		ImGui::Text(" Right Click: Rotation toggle\n");
+		ImGui::Text(" C: OctTree toggle\n");
+		ImGui::Text(" X: QuadTree toggle\n");
+		ImGui::Text(" Z: KDTree toggle\n");
 		ImGui::Text(" F9: Toggle Debug Handles\n");
 	}
 	ImGui::End();
