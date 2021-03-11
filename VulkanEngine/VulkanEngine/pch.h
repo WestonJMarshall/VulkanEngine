@@ -59,4 +59,8 @@
 #include "InputStates.h"
 #include "PhysicsLayers.h"
 
+//Classes
+#include "PartitionTree.h"
+#include "BinaryPartitionTree.h"
+
 #endif //PCH_H

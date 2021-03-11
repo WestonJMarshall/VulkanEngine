@@ -165,6 +165,8 @@
     <ClCompile Include="PhysicsObject.cpp">
       <Filter>Source Files\GameObjectComponents</Filter>
     </ClCompile>
+    <ClCompile Include="BinaryPartitionTree.cpp">
+      <Filter>Source Files</Filter>
     <ClCompile Include="OctTree.cpp">
       <Filter>Source Files\Components\Colliders</Filter>
     </ClCompile>
@@ -287,6 +289,11 @@
     <ClInclude Include="PhysicsObject.h">
       <Filter>Header Files\GameObjectComponents</Filter>
     </ClInclude>
+    <ClInclude Include="BinaryPartitionTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionTree.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="KDTree.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>

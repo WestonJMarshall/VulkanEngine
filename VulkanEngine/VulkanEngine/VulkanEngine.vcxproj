@@ -179,6 +179,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="BinaryPartitionTree.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="AABBCollider.h" />
     <ClInclude Include="AngleAxis.h" />
     <ClInclude Include="ARBBCollider.h" />
+    <ClInclude Include="BinaryPartitionTree.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
@@ -244,6 +246,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshTypes.h" />
     <ClInclude Include="Octant.h" />
+    <ClInclude Include="PartitionTree.h" />
     <ClInclude Include="OctTree.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsLayers.h" />

@@ -107,10 +107,35 @@ void GameManager::Init()
     //gameObjects[0]->SetName("Floor");
     
     //Setup Cube
+    gameObjects[1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
+    gameObjects[1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 45.0f, 0.0f));
+    gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
+    gameObjects[1]->SetName("StaticCube");
+
+    //Setup Dynamic Objects
+    gameObjects[2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 2.5f, 0.0f)));
+    gameObjects[2]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
+    gameObjects[2]->SetName("FloatingCube");
+
+    gameObjects[3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.95f, 2.5f, -1.5f)));
+    gameObjects[3]->SetPhysicsObject(PhysicsLayers::Dynamic,ColliderTypes::ARBB);
+    gameObjects[3]->SetName("DynamicCube");
+
+    gameObjects[4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 2.5f, 0.0f)));
+    gameObjects[4]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::Sphere);
+    gameObjects[4]->SetName("DynamicSphere0");
+
+    //setup model
+    gameObjects[5]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 0.0f, -1.5f)));
+    gameObjects[5]->GetTransform()->SetOrientation(glm::vec3(-90.0f, -90.0f, 0.0f));
+    gameObjects[5]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false, true);
+    gameObjects[5]->SetName("Model");
+
     //gameObjects[1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
     //gameObjects[1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 45.0f, 0.0f));
    // gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
     //gameObjects[1]->SetName("StaticCube");
+
 
     // setup skybox
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Skybox]));
@@ -193,6 +218,19 @@ void GameManager::Init()
 	{
 		OctTreeManager::AddShape(gameObjects[i]);
 	}
+
+    //Setup partitioning for static objects
+    std::unique_ptr<PartitionTree> bsp = std::unique_ptr<BinaryPartitionTree>(new BinaryPartitionTree());
+    bsp->Initialize(5, 2);
+
+    for (size_t i = 0; i < gameObjects.size(); i++) {
+        if (gameObjects[i]->GetPhysicsObject() != nullptr && gameObjects[i]->GetPhysicsObject()->GetPhysicsLayer() == PhysicsLayers::Static)
+        {
+            bsp->Fill(gameObjects[i]);
+        }
+    }
+
+    bsp->Generate();
 
     //Reset time so that it doesn't include initialization in totalTime
     Time::Reset();
