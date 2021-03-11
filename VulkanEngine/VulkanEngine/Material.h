@@ -8,7 +8,7 @@ protected:
 
 	std::string vertexShaderPath;
 	std::string fragmentShaderPath;
-	bool wireframe;
+	
 
 	VkPipelineLayout pipelineLayout;
 	VkPipeline pipeline;
@@ -25,7 +25,7 @@ protected:
 
 	TextureImages* tImage = new TextureImages();
 public:
-
+	bool wireframe;
 #pragma region Memory Management
 
 	Material(std::string vertexShaderPath, std::string fragmentShaderPath, bool wireframe, std::vector<std::vector<VkVertexInputAttributeDescription>> attributes, std::vector<VkVertexInputBindingDescription> bindings, std::string materialPath, char type = ' ');

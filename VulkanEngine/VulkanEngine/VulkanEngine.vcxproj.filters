@@ -167,6 +167,8 @@
     </ClCompile>
     <ClCompile Include="BinaryPartitionTree.cpp">
       <Filter>Source Files</Filter>
+    <ClCompile Include="OctTree.cpp">
+      <Filter>Source Files\Components\Colliders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +294,17 @@
     </ClInclude>
     <ClInclude Include="PartitionTree.h">
       <Filter>Header Files</Filter>
+    <ClInclude Include="KDTree.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Fixed_Data.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="OctTree.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_DISABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include\stb;C:\VulkanSDK\1.2.135.0\Include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -198,6 +198,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Octant.cpp" />
+    <ClCompile Include="OctTree.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -230,6 +231,7 @@
     <ClInclude Include="DebugShape.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Fixed_Data.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GuiManager.h" />
@@ -238,17 +240,20 @@
     <ClInclude Include="InputAxis.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputStates.h" />
+    <ClInclude Include="KDTree.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshTypes.h" />
     <ClInclude Include="Octant.h" />
     <ClInclude Include="PartitionTree.h" />
+    <ClInclude Include="OctTree.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsLayers.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="ProjectionData.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="SwapChain.h" />

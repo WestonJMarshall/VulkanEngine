@@ -14,6 +14,9 @@ namespace Controls {
 		LeftClick,
 		RightClick,
 		ToggleDebug,
+		KDTreeTog,
+		QTreeTog,
+		OTreeTog,
 		ControlCount
 	};
 
