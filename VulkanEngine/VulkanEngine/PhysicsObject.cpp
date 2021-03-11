@@ -291,7 +291,7 @@ void PhysicsObject::Update()
 		acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		angularVelocity += angularAcceleration * Time::GetDeltaTime();//glm::mix(angularVelocity, angularAcceleration * angularVelocity, Time::GetDeltaTime());
-		std::cout << angularVelocity << std::endl;
+		//std::cout << angularVelocity << std::endl;
 		angularAcceleration = AngleAxis();
 
 		//Apply velocity

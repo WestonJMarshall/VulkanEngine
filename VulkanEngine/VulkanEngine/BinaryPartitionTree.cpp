@@ -410,6 +410,7 @@ void BinaryPartitionTree::BSP_Clear_Resizing()
 
 void BinaryPartitionTree::SetBounds(glm::vec3 center, glm::vec3 extents)
 {
+	//FIX
 	bounds->GetCollider()->GetTransform()->SetPosition(center);
 	Collider* colliderTemp = &*bounds->GetCollider();
 	static_cast<AABBCollider*>(colliderTemp)->SetExtents(extents);

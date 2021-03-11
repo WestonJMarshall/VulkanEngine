@@ -255,6 +255,7 @@ bool PhysicsManager::SAT(std::shared_ptr<Collider> collider1, std::shared_ptr<Co
 
     for (int i = 0; i < 3; i++) {
         for (int j = 3; j < 6; j++) {
+            //if(glm::cross(SATaxis[i], SATaxis[j]) != glm::vec3(0.0f,0.0f,0.0f))
             SATaxis.push_back(glm::cross(SATaxis[i], SATaxis[j]));
         }
     }
@@ -310,6 +311,15 @@ bool PhysicsManager::SAT(std::shared_ptr<Collider> collider1, std::shared_ptr<Co
     else {
         collisionPoints[0] = closestData[1].maxPoints;
         collisionPoints[1] = closestData[0].minPoints;
+    }
+
+    if (collisionPoints[0].size() == 1 && collisionPoints[1].size() == 4)
+    {
+        collisionPoints[1].resize(3);
+    }
+    else if (collisionPoints[1].size() == 1 && collisionPoints[0].size() == 4)
+    {
+        collisionPoints[0].resize(3);
     }
 
     switch (collisionPoints[0].size() + collisionPoints[1].size()) {

@@ -60,11 +60,14 @@ void GameManager::Init()
     //Setup Lights
     lights.push_back(std::make_shared<Light>(glm::vec3(1.5f, 1.1f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 20.0f));
     lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 2.0f, -1.5f), glm::vec3(1.0f, 0.988f, 0.769f), 3.0f));
-	OctTreeManager::InitOctTree(-2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 4, 2);
-	OctTreeManager::despawnShapes();
-	Points_Tree.clear();
-	QuadTree* quadTree = new QuadTree();
-	activeOctTree = true;
+
+	//OctTreeManager::InitOctTree(-2.0f, 2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 4, 2);
+	//OctTreeManager::despawnShapes();
+	//Points_Tree.clear();
+	//QuadTree* quadTree = new QuadTree();
+	//activeOctTree = true;
+
+    //Create objects
 	for (int i = 0; i < 75; i++) {
 
 		float randX = (float)rand() / (float)RAND_MAX;
@@ -90,15 +93,18 @@ void GameManager::Init()
 
 		gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
 		gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
+        gameObjects[i]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
 		gameObjects[i]->SetName("Cube");
 		gameObjects[i]->Init();
+        gameObjects[i]->Spawn();
 	}
 	for (int i = 0; i < 75; i++) {
 		std::cout << "checking gameobj  " << gameObjects[i]->GetTransform()->GetPosition().y << std::endl;
 	}
+
     //gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
     //gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
-    //
+    
 
     //Setup Plane
     //gameObjects[0]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -0.05f, 0.0f)));
@@ -107,33 +113,33 @@ void GameManager::Init()
     //gameObjects[0]->SetName("Floor");
     
     //Setup Cube
-    gameObjects[1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
-    gameObjects[1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 45.0f, 0.0f));
-    gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
-    gameObjects[1]->SetName("StaticCube");
-
-    //Setup Dynamic Objects
-    gameObjects[2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 2.5f, 0.0f)));
-    gameObjects[2]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
-    gameObjects[2]->SetName("FloatingCube");
-
-    gameObjects[3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.95f, 2.5f, -1.5f)));
-    gameObjects[3]->SetPhysicsObject(PhysicsLayers::Dynamic,ColliderTypes::ARBB);
-    gameObjects[3]->SetName("DynamicCube");
-
-    gameObjects[4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 2.5f, 0.0f)));
-    gameObjects[4]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::Sphere);
-    gameObjects[4]->SetName("DynamicSphere0");
+    //gameObjects[1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
+    //gameObjects[1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 45.0f, 0.0f));
+    //gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
+    //gameObjects[1]->SetName("StaticCube");
+	//
+    ////Setup Dynamic Objects
+    //gameObjects[2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 2.5f, 0.0f)));
+    //gameObjects[2]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
+    //gameObjects[2]->SetName("FloatingCube");
+	//
+    //gameObjects[3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.95f, 2.5f, -1.5f)));
+    //gameObjects[3]->SetPhysicsObject(PhysicsLayers::Dynamic,ColliderTypes::ARBB);
+    //gameObjects[3]->SetName("DynamicCube");
+	//
+    //gameObjects[4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 2.5f, 0.0f)));
+    //gameObjects[4]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::Sphere);
+    //gameObjects[4]->SetName("DynamicSphere0");
 
     //setup model
-    gameObjects[5]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 0.0f, -1.5f)));
-    gameObjects[5]->GetTransform()->SetOrientation(glm::vec3(-90.0f, -90.0f, 0.0f));
-    gameObjects[5]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false, true);
-    gameObjects[5]->SetName("Model");
+    //gameObjects[5]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 0.0f, -1.5f)));
+    //gameObjects[5]->GetTransform()->SetOrientation(glm::vec3(-90.0f, -90.0f, 0.0f));
+    //gameObjects[5]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false, true);
+    //gameObjects[5]->SetName("Model");
 
     //gameObjects[1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
     //gameObjects[1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 45.0f, 0.0f));
-   // gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
+    //gameObjects[1]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 1.0f, false);
     //gameObjects[1]->SetName("StaticCube");
 
 
@@ -145,79 +151,79 @@ void GameManager::Init()
 	gameObjects[lastIndex]->Init();
 	gameObjects[lastIndex]->Spawn();
     
-    //for (size_t i = 0; i < gameObjects.size(); i++) {
-        //gameObjects[i]->Init();
-        //gameObjects[i]->Spawn();
-    //}
-
-	//make quadTree
-	for (int i = 0; i < entitycount; i++)
-	{
-		point_body_x[i] = gameObjects[i]->GetTransform()->GetPosition().x;
-		point_body_y[i] = gameObjects[i]->GetTransform()->GetPosition().y;
-		//bind the body points to the tree points
-		//makes a check for negative and positive coords
-		//then adds them to the tree point array
-		//if for some reason the point is beyound the range,
-		//set position as zero
-		if (point_body_x[i] >= -Range && point_body_x[i] <= 0.00000001f) {
-			point_tree_x[i] = roundf(point_body_x[i] * 1000) / 1000;
-		}
-		else if (point_body_x[i] >= 0.000001f && point_body_x[i] <= Range) {
-			point_tree_x[i] = roundf(point_body_x[i] * 1000) / 1000;
-		}
-		else {
-			point_tree_x[i] = 0;
-		}
-
-		if (point_body_y[i] >= -Range && point_body_y[i] <= 0.00000001f) {
-			point_tree_y[i] = roundf(point_body_y[i] * 1000) / 1000;
-		}
-		else if (point_body_y[i] >= 0.000001f && point_body_y[i] <= Range) {
-			point_tree_y[i] = roundf(point_body_y[i] * 1000) / 1000;
-		}
-		else {
-			point_tree_y[i] = 0;
-		}
-
-	}
-
-	for (int a = 0; a < entitycount; a++)
-	{
-		float _x = point_tree_x[a];
-		float _y = point_tree_y[a];
-
-		domain.push_back(_x);
-		range.push_back(_y);
-
-		point_temp.xpos = _x;
-		point_temp.ypos = _y;
-		//point_temp.id = a; for testing
-
-		Points_Tree.push_back(point_temp);
-
-		Point_Coord.push_back(_Point_xy(_x, _y));
-
-	}
-
-	//create the KD tree
-
-	KDtree = new KD_tree(Points_Tree);
-	KDtree->printInfo();
-	KDtree->printTree();
-
-	//draw it using debug lines
-	KDtree->drawKDTree(*(KDtree->get_Root()));
-	//drawKDTree(*(KDtree->get_Root()));
-
-	for (int i = entitycount; i < entitycount * 2; i++)
-	{
-		quadTree->Insert(gameObjects[i]->GetTransform()->GetPosition(), linePoints, maxCount);
-	}
-	for (int i = entitycount * 2; i < entitycount * 3; i++)
-	{
-		OctTreeManager::AddShape(gameObjects[i]);
-	}
+//    //for (size_t i = 0; i < gameObjects.size(); i++) {
+//        //gameObjects[i]->Init();
+//        //gameObjects[i]->Spawn();
+//    //}
+//
+//	//make quadTree
+//	for (int i = 0; i < entitycount; i++)
+//	{
+//		point_body_x[i] = gameObjects[i]->GetTransform()->GetPosition().x;
+//		point_body_y[i] = gameObjects[i]->GetTransform()->GetPosition().y;
+//		//bind the body points to the tree points
+//		//makes a check for negative and positive coords
+//		//then adds them to the tree point array
+//		//if for some reason the point is beyound the range,
+//		//set position as zero
+//		if (point_body_x[i] >= -Range && point_body_x[i] <= 0.00000001f) {
+//			point_tree_x[i] = roundf(point_body_x[i] * 1000) / 1000;
+//		}
+//		else if (point_body_x[i] >= 0.000001f && point_body_x[i] <= Range) {
+//			point_tree_x[i] = roundf(point_body_x[i] * 1000) / 1000;
+//		}
+//		else {
+//			point_tree_x[i] = 0;
+//		}
+//
+//		if (point_body_y[i] >= -Range && point_body_y[i] <= 0.00000001f) {
+//			point_tree_y[i] = roundf(point_body_y[i] * 1000) / 1000;
+//		}
+//		else if (point_body_y[i] >= 0.000001f && point_body_y[i] <= Range) {
+//			point_tree_y[i] = roundf(point_body_y[i] * 1000) / 1000;
+//		}
+//		else {
+//			point_tree_y[i] = 0;
+//		}
+//
+//	}
+//
+//	for (int a = 0; a < entitycount; a++)
+//	{
+//		float _x = point_tree_x[a];
+//		float _y = point_tree_y[a];
+//
+//		domain.push_back(_x);
+//		range.push_back(_y);
+//
+//		point_temp.xpos = _x;
+//		point_temp.ypos = _y;
+//		//point_temp.id = a; for testing
+//
+//		Points_Tree.push_back(point_temp);
+//
+//		Point_Coord.push_back(_Point_xy(_x, _y));
+//
+//	}
+//
+//	//create the KD tree
+//
+//	KDtree = new KD_tree(Points_Tree);
+//	KDtree->printInfo();
+//	KDtree->printTree();
+//
+//	//draw it using debug lines
+//	KDtree->drawKDTree(*(KDtree->get_Root()));
+//	//drawKDTree(*(KDtree->get_Root()));
+//
+//	for (int i = entitycount; i < entitycount * 2; i++)
+//	{
+//		quadTree->Insert(gameObjects[i]->GetTransform()->GetPosition(), linePoints, maxCount);
+//	}
+//	for (int i = entitycount * 2; i < entitycount * 3; i++)
+//	{
+//		OctTreeManager::AddShape(gameObjects[i]);
+//	}
 
     //Setup partitioning for static objects
     std::unique_ptr<PartitionTree> bsp = std::unique_ptr<BinaryPartitionTree>(new BinaryPartitionTree());
@@ -235,7 +241,7 @@ void GameManager::Init()
     //Reset time so that it doesn't include initialization in totalTime
     Time::Reset();
 
-	CreateOctTree();
+	//CreateOctTree();
 }
 
 void GameManager::Update()
@@ -244,18 +250,19 @@ void GameManager::Update()
     // MeshManager::GetInstance()->DrawWireCube(glm::vec3(1.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     //Rotate Camera
     //  Toggle camera lock on right click
-	OctTreeManager::UpdateOctTree(activeOctTree);
-	activeOctTree = false;
 
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::KDTreeTog)) {
-		CreateKDTree();
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::QTreeTog)) {
-		CreateQuadTree();
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::OTreeTog)) {
-		CreateOctTree();
-	}
+//	OctTreeManager::UpdateOctTree(activeOctTree);
+//	activeOctTree = false;
+//
+//	if (InputManager::GetInstance()->GetKeyPressed(Controls::KDTreeTog)) {
+//		CreateKDTree();
+//	}
+//	if (InputManager::GetInstance()->GetKeyPressed(Controls::QTreeTog)) {
+//		CreateQuadTree();
+//	}
+//	if (InputManager::GetInstance()->GetKeyPressed(Controls::OTreeTog)) {
+//		CreateOctTree();
+//	}
 
     if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
         lockCamera = !lockCamera;
