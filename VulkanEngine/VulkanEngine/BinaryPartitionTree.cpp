@@ -85,6 +85,11 @@ int BinaryPartitionTree::Generate()
 	return 1;
 }
 
+int BinaryPartitionTree::Insert(std::shared_ptr<GameObject> gameObject)
+{
+	return 0;
+}
+
 int BinaryPartitionTree::Draw()
 {
 	return 1;

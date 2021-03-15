@@ -11,6 +11,9 @@ public:
 	int Initialize(int maxSubdivisions, int minToSubdivide);
 	int Fill(std::shared_ptr<GameObject> gameObject);
 	int Generate();
+
+	int Insert(std::shared_ptr<GameObject> gameObject);
+
 	int Draw();
 
 	void SetMeansContentsValue(float value) { meanContentsValue = value; }
