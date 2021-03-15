@@ -109,7 +109,7 @@ void EntityManager::LoadMaterials()
     materials.push_back(std::make_shared<Material>("shaders/vert.spv", "shaders/frag.spv", false, attributeDescriptions, bindingDescriptions, "textures/Square.png"));
     //materials.push_back(std::make_shared<Material>("shaders/vert.spv", "shaders/unlitfrag.spv", true, attributeDescriptions, bindingDescriptions, "textures/room.png"));
     materials.push_back(std::make_shared<Material>("shaders/vert.spv", "shaders/frag.spv", false, attributeDescriptions, bindingDescriptions, "textures/room.png"));
-    materials.push_back(std::make_shared<Material>("shaders/SkyVert.spv", "shaders/SkyFrag.spv", false, attributeDescriptions, bindingDescriptions, "textures/Skybox/", 'S'));
+    materials.push_back(std::make_shared<Material>("shaders/SkyVert2D.spv", "shaders/SkyFrag2D.spv", false, attributeDescriptions, bindingDescriptions, "textures/Skybox/", 'S'));
 
     //TODO: Find a better way of doing this that will work for multiple types of inputs
     std::vector<VkVertexInputAttributeDescription> attributeDescription(1);
@@ -164,7 +164,7 @@ void EntityManager::Draw(uint32_t imageIndex, VkCommandBuffer* commandBuffer)
     renderPassBeginInfo.renderArea.offset = { 0, 0 };
 
     std::array<VkClearValue, 2> clearColors = {};
-    clearColors[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    clearColors[0] = { 1.0f, 1.0f, 1.0f, 1.0f };
     clearColors[1].depthStencil = { 1.0f, 0 };
 
     renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());

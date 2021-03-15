@@ -168,7 +168,7 @@ void Camera::UpdateProjection()
 	}
 	else {
 		float width = orthographicSize * aspectRatio;
-		projection = glm::ortho(-width, width, orthographicSize, -orthographicSize, clippingPlanes.x, clippingPlanes.y);
+		projection = glm::ortho(-width, width, -orthographicSize, orthographicSize, clippingPlanes.x, clippingPlanes.y);
 	}
 
 	projection[1][1] *= -1; //Correct for flipped y-axis from OpenGL

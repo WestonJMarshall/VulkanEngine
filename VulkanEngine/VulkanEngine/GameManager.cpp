@@ -57,11 +57,12 @@ std::shared_ptr<GameObject> GameManager::GetObjectByName(std::string name)
 void GameManager::Init()
 {
 	Camera::GetMainCamera()->SetPerspective(false);
+	cameraSpeed = 5.0f;
 
 	srand(time(NULL));
 	//Setup Lights
-	lights.push_back(std::make_shared<Light>(glm::vec3(1.5f, 1.1f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 20.0f));
-	lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 2.0f, -1.5f), glm::vec3(1.0f, 0.988f, 0.769f), 3.0f));
+	lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.1f, 0.1f), 28.0f));
+	//lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 2.0f, -1.5f), glm::vec3(1.0f, 0.988f, 0.769f), 3.0f));
 
 	for (int i = 0; i < 75; i++) {
 
@@ -95,14 +96,6 @@ void GameManager::Init()
 	for (int i = 0; i < 75; i++) {
 		std::cout << "checking gameobj  " << gameObjects[i]->GetTransform()->GetPosition().y << std::endl;
 	}
-
-	// setup skybox
-	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Skybox]));
-	int lastIndex = gameObjects.size() - 1;
-	gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0)));
-	gameObjects[lastIndex]->SetName("Skybox");
-	gameObjects[lastIndex]->Init();
-	gameObjects[lastIndex]->Spawn();
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
@@ -139,16 +132,16 @@ void GameManager::Update()
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 
+	if (InputManager::GetInstance()->GetKey(Controls::Up)) {
+		Camera::GetMainCamera()->SetOrthographicSize(Camera::GetMainCamera()->GetOrthographicSize() * 1.001f);
+	}
+	if (InputManager::GetInstance()->GetKey(Controls::Down)) {
+		Camera::GetMainCamera()->SetOrthographicSize(Camera::GetMainCamera()->GetOrthographicSize() * 0.999f);
+	}
 	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
-		//moveDirection += glm::vec3(0.0f, 0.0f, 1.0f);
-	}
-	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
-		//moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
-	}
-	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
 		moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
-	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
 		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
@@ -163,10 +156,6 @@ void GameManager::Update()
 	}
 
 	Camera::GetMainCamera()->GetTransform()->Translate(moveDirection * cameraSpeed * Time::GetDeltaTime(), true);
-
-	//Update Lights
-	float scaledTime = Time::GetTotalTime() / 2.5f;
-	lights[0]->position = glm::vec3(0.0f, 1.1f, 0.0f) + glm::vec3(cos(scaledTime), 0.0f, sin(scaledTime)) * 1.5f;
 
 	//gameObjects[0]->GetTransform()->Rotate(glm::vec3(0.0f, 10.0f, 0.0f) * Time::GetDeltaTime());
 
