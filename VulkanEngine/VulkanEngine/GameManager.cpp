@@ -57,11 +57,12 @@ std::shared_ptr<GameObject> GameManager::GetObjectByName(std::string name)
 void GameManager::Init()
 {
 	Camera::GetMainCamera()->SetPerspective(false);
+	PhysicsManager::GetInstance()->SetGravityDirection(glm::vec3(0.0f, 1.0f, 0.0f));
 
 	srand(time(NULL));
 	//Setup Lights
-	lights.push_back(std::make_shared<Light>(glm::vec3(1.5f, 1.1f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 20.0f));
-	lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 2.0f, -1.5f), glm::vec3(1.0f, 0.988f, 0.769f), 3.0f));
+	lights.push_back(std::make_shared<Light>(glm::vec3(1.5f, 1.1f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 70.0f));
+	lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 3.0f, -1.5f), glm::vec3(1.0f, 0.988f, 0.769f), 500.0f));
 
 	for (int i = 0; i < 75; i++) {
 
@@ -90,35 +91,35 @@ void GameManager::Init()
 		gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 		gameObjects[i]->SetName("Cube");
 		gameObjects[i]->Init();
-		gameObjects[i]->Spawn();
+		//gameObjects[i]->Spawn();
 	}
 	for (int i = 0; i < 75; i++) {
 		std::cout << "checking gameobj  " << gameObjects[i]->GetTransform()->GetPosition().y << std::endl;
 	}
 
 	// setup skybox
-	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Skybox]));
-	int lastIndex = gameObjects.size() - 1;
-	gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0)));
-	gameObjects[lastIndex]->SetName("Skybox");
-	gameObjects[lastIndex]->Init();
-	gameObjects[lastIndex]->Spawn();
+	//gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Skybox]));
+	//int lastIndex = gameObjects.size() - 1;
+	//gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0)));
+	//gameObjects[lastIndex]->SetName("Skybox");
+	//gameObjects[lastIndex]->Init();
+	//gameObjects[lastIndex]->Spawn();
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
-	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.0f, 0)));
-	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(5.0f, 0.5f, 1.0f));
+	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(10.0f, 0.5f, 1.0f));
 	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 1.0f, false);
 	gameObjects[gameObjects.size() - 3]->SetName("Floor");
 
-	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, -0.5f, 0)));
 	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
     gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
 	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
 
-	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, -0.5f, 0)));
 	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
 	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
 	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
@@ -130,12 +131,49 @@ void GameManager::Init()
 	gameObjects[gameObjects.size() - 2]->Spawn();
 	gameObjects[gameObjects.size() - 1]->Spawn();
 
+
 	//Reset time so that it doesn't include initialization in totalTime
 	Time::Reset();
 }
 
 void GameManager::Update()
 {
+
+	if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
+		float x = InputManager::GetInstance()->GetMousePosition().x;
+		float y = InputManager::GetInstance()->GetMousePosition().y;
+		//inputs
+		float rangeXStartMouse = 0;
+		float rangeXEndMouse = 800;
+		float rangeYStartMouse = 0;
+		float rangeYEndMouse = 600;
+
+		//outputs
+		float rangeXStartFloat = -7.0f;
+		float rangeXEndFloat = 7.0f;
+		float rangeYStartFloat = -5.0f;
+		float rangeYEndFloat = 5.0f;
+
+		float newX = (rangeXStartFloat + ((rangeXEndFloat - rangeXStartFloat) / (rangeXEndMouse - rangeXStartMouse)) * (x - rangeXStartMouse));
+		float newY = (rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
+
+		std::cout << "Xpos mod: " << x << std::endl;
+		std::cout << "YPos mod: " << y << std::endl;
+
+
+		//add a cube to the gameobject vector
+		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+
+		int lastIndex = gameObjects.size() - 1;
+		//set data, place position at random coords
+		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(newX, newY, 0)));
+		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+		gameObjects[lastIndex]->SetName("Cube");
+		
+		gameObjects[lastIndex]->Init();
+		gameObjects[lastIndex]->Spawn();
+	}
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -146,23 +184,23 @@ void GameManager::Update()
 		//moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
-		moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
+		//moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
-		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
+		//moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
-		moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
-		moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
 	}
 
 	if (moveDirection.x != 0 || moveDirection.y != 0 || moveDirection.z != 0) {
-		moveDirection = glm::normalize(moveDirection);
+		//moveDirection = glm::normalize(moveDirection);
 	}
 
-	Camera::GetMainCamera()->GetTransform()->Translate(moveDirection * cameraSpeed * Time::GetDeltaTime(), true);
+	
 
 	//Update Lights
 	float scaledTime = Time::GetTotalTime() / 2.5f;
@@ -171,10 +209,11 @@ void GameManager::Update()
 	//gameObjects[0]->GetTransform()->Rotate(glm::vec3(0.0f, 10.0f, 0.0f) * Time::GetDeltaTime());
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
 	}
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
+		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
 		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
 	}
 
