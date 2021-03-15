@@ -101,17 +101,17 @@ void GameManager::Init()
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
-	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.0f, 0)));
-	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(5.0f, 0.5f, 1.0f));
+	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(10.0f, 0.5f, 1.0f));
 	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 1.0f, false);
 	gameObjects[gameObjects.size() - 3]->SetName("Floor");
 
-	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, -0.5f, 0)));
 	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
     gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
 	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
 
-	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
+	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, -0.5f, 0)));
 	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
 	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
 	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
@@ -129,6 +129,42 @@ void GameManager::Init()
 
 void GameManager::Update()
 {
+
+	if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
+		float x = InputManager::GetInstance()->GetMousePosition().x;
+		float y = InputManager::GetInstance()->GetMousePosition().y;
+		//inputs
+		float rangeXStartMouse = 0;
+		float rangeXEndMouse = 800;
+		float rangeYStartMouse = 0;
+		float rangeYEndMouse = 600;
+
+		//outputs
+		float rangeXStartFloat = -7.0f;
+		float rangeXEndFloat = 7.0f;
+		float rangeYStartFloat = -5.0f;
+		float rangeYEndFloat = 5.0f;
+
+		float newX = (rangeXStartFloat + ((rangeXEndFloat - rangeXStartFloat) / (rangeXEndMouse - rangeXStartMouse)) * (x - rangeXStartMouse));
+		float newY = (rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
+
+		std::cout << "Xpos mod: " << x << std::endl;
+		std::cout << "YPos mod: " << y << std::endl;
+
+
+		//add a cube to the gameobject vector
+		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+
+		int lastIndex = gameObjects.size() - 1;
+		//set data, place position at random coords
+		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(newX, newY, 0)));
+		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+		gameObjects[lastIndex]->SetName("Cube");
+		
+		gameObjects[lastIndex]->Init();
+		gameObjects[lastIndex]->Spawn();
+	}
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -160,10 +196,11 @@ void GameManager::Update()
 	//gameObjects[0]->GetTransform()->Rotate(glm::vec3(0.0f, 10.0f, 0.0f) * Time::GetDeltaTime());
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
 	}
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
+		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
 		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
 	}
 
