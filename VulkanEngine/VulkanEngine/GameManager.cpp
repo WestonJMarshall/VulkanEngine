@@ -57,6 +57,7 @@ std::shared_ptr<GameObject> GameManager::GetObjectByName(std::string name)
 void GameManager::Init()
 {
 	Camera::GetMainCamera()->SetPerspective(false);
+	PhysicsManager::GetInstance()->SetGravityDirection(glm::vec3(0.0f, 1.0f, 0.0f));
 	cameraSpeed = 5.0f;
 
 	srand(time(NULL));
@@ -174,10 +175,10 @@ void GameManager::Update()
 	if (InputManager::GetInstance()->GetKey(Controls::Down)) {
 		Camera::GetMainCamera()->SetOrthographicSize(Camera::GetMainCamera()->GetOrthographicSize() * 0.999f);
 	}
-	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
 		moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
-	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
 		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
@@ -195,14 +196,14 @@ void GameManager::Update()
 
 	//gameObjects[0]->GetTransform()->Rotate(glm::vec3(0.0f, 10.0f, 0.0f) * Time::GetDeltaTime());
 
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
-		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
-		//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
-	}
+	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
+	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
+	//	gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
+	//}
+	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
+	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
+	//	gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
+	//}
 
 	//TODO: Remove when finished
 	//Make sure axis are correct
