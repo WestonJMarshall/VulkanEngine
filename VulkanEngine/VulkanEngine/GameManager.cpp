@@ -56,6 +56,8 @@ std::shared_ptr<GameObject> GameManager::GetObjectByName(std::string name)
 
 void GameManager::Init()
 {
+	Camera::GetMainCamera()->SetPerspective(false);
+
 	srand(time(NULL));
 	//Setup Lights
 	lights.push_back(std::make_shared<Light>(glm::vec3(1.5f, 1.1f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 20.0f));
@@ -134,66 +136,26 @@ void GameManager::Init()
 
 void GameManager::Update()
 {
-	// MshMngr->ClearRenderList();
-	// MeshManager::GetInstance()->DrawWireCube(glm::vec3(1.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//Rotate Camera
-	//  Toggle camera lock on right click
-	OctTreeManager::UpdateOctTree(activeOctTree);
-	if (activeOctTree) {
-		OctTreeManager::despawnShapes();
-	}
-	activeOctTree = false;
-
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::KDTreeTog)) {
-		CreateKDTree();
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::QTreeTog)) {
-		CreateQuadTree();
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::OTreeTog)) {
-		CreateOctTree();
-	}
-
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
-		lockCamera = !lockCamera;
-	}
-	if (InputManager::GetInstance()->GetKeyPressed(Controls::LeftClick)) {
-		lockCamera = !lockCamera;
-	}
-
-	//  Rotate camera if not locked
-	if (!lockCamera) {
-		glm::vec2 deltaMouse = InputManager::GetInstance()->GetDeltaMouse();
-		if (deltaMouse.x != 0 || deltaMouse.y != 0) {
-			deltaMouse = glm::normalize(deltaMouse);
-		}
-
-		glm::quat orientation = Camera::GetMainCamera()->GetTransform()->GetOrientation();
-		glm::vec3 rotation = orientation * glm::vec3(deltaMouse.y, 0.0f, 0.0f) + glm::vec3(0.0f, -deltaMouse.x, 0.0f);
-
-		Camera::GetMainCamera()->GetTransform()->Rotate(rotation);
-	}
-
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
-		moveDirection += glm::vec3(0.0f, 0.0f, 1.0f);
+		//moveDirection += glm::vec3(0.0f, 0.0f, 1.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
-		moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
+		//moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
 	}
-	if (InputManager::GetInstance()->GetKey(Controls::Up)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
 		moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
-	if (InputManager::GetInstance()->GetKey(Controls::Down)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
 		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
-		//moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
+		moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
-		//moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
+		moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
 	}
 
 	if (moveDirection.x != 0 || moveDirection.y != 0 || moveDirection.z != 0) {
