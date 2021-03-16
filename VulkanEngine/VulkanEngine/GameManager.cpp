@@ -76,21 +76,21 @@ void GameManager::Init()
 		float finalRandZ = (randZ * randRange) + -Range;
 
 		//add a cube to the gameobject vector
-		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+		//gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
 		//set data, place position at random coords
 
 		if (i >= 50 && i <= 75) {
-			gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, finalRandZ)));
+			//gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, finalRandZ)));
 		}
 		else {
-			gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, 0.0f)));
+			//gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, 0.0f)));
 		}
 
-		gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-		gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
-		gameObjects[i]->SetName("Cube");
-		gameObjects[i]->Init();
+		//gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
+		//gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
+		//gameObjects[i]->SetName("Cube");
+		//gameObjects[i]->Init();
 	}
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
@@ -125,6 +125,13 @@ void GameManager::Init()
 
 void GameManager::Update()
 {
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		if (gameObjects[i]->GetTransform()->GetPosition().y < -10.0f) {
+			gameObjects[i]->Despawn();
+			gameObjects.erase(gameObjects.begin() + i );
+		}
+	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
 		float x = InputManager::GetInstance()->GetMousePosition().x;
@@ -171,16 +178,16 @@ void GameManager::Update()
 		Camera::GetMainCamera()->SetOrthographicSize(Camera::GetMainCamera()->GetOrthographicSize() * 0.999f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Back)) {
-		moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
+		//moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Forward)) {
-		moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
+		//moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
-		moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
-		moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
+		//moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
 	}
 
 	if (moveDirection.x != 0 || moveDirection.y != 0 || moveDirection.z != 0) {
@@ -191,11 +198,11 @@ void GameManager::Update()
 
 	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-	//	gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
 	//}
 	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-	//	gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
+		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
 	//}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
