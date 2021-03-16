@@ -82,7 +82,6 @@ void GameManager::Init()
 
 		if (i >= 50 && i <= 75) {
 			gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, finalRandZ)));
-			//gameObjects[i]->GetTransform()->SetPosition(glm::vec3(finalRandX, finalRandY, finalRandZ));
 		}
 		else {
 			gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, 0.0f)));
@@ -92,10 +91,6 @@ void GameManager::Init()
 		gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 		gameObjects[i]->SetName("Cube");
 		gameObjects[i]->Init();
-		gameObjects[i]->Spawn();
-	}
-	for (int i = 0; i < 75; i++) {
-		std::cout << "checking gameobj  " << gameObjects[i]->GetTransform()->GetPosition().y << std::endl;
 	}
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
@@ -147,10 +142,10 @@ void GameManager::Update()
 		float rangeYEndFloat = 5.0f;
 
 		float newX = (rangeXStartFloat + ((rangeXEndFloat - rangeXStartFloat) / (rangeXEndMouse - rangeXStartMouse)) * (x - rangeXStartMouse));
-		float newY = (rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
+		float newY = -(rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
 
-		std::cout << "Xpos mod: " << x << std::endl;
-		std::cout << "YPos mod: " << y << std::endl;
+		//std::cout << "Xpos mod: " << x << std::endl;
+		//std::cout << "YPos mod: " << y << std::endl;
 
 
 		//add a cube to the gameobject vector
