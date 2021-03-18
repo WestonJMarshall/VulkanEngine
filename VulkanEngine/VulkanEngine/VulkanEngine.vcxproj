@@ -204,6 +204,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PhysicsManager2D.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="SwapChain.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsLayers.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PhysicsManager2D.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="ProjectionData.h" />
     <ClInclude Include="QuadTree.h" />

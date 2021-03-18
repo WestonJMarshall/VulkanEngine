@@ -1,361 +1,111 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Manager">
-      <UniqueIdentifier>{d8e77c1e-aa16-4d98-82b0-f5ee86e3991e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Manager">
-      <UniqueIdentifier>{28104313-3daa-4610-9e1f-74a531a32faa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Components">
-      <UniqueIdentifier>{d92de30a-b3c0-4edb-a703-e5497cb1632d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Structs">
-      <UniqueIdentifier>{af040d74-174a-42bc-8184-50a4bfca82e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Components">
-      <UniqueIdentifier>{c13b3ab4-15a3-4f72-bd2d-8bc6c3a6318d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Enums">
-      <UniqueIdentifier>{8521b87b-d588-4b2c-8368-37acbc592b4d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{7b1ab22d-992b-430f-b765-090b384ac123}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Components\Colliders">
-      <UniqueIdentifier>{a2a201a2-6538-48e2-ae35-99ca44a026ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Components\Colliders">
-      <UniqueIdentifier>{e93e7adb-7fa9-4066-8c60-6e0faa0df169}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{5042c99a-be94-4eeb-bb37-0b2c77365711}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\GameObjectComponents">
-      <UniqueIdentifier>{0cd110eb-731c-40d1-bb8b-e05a37f68674}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GameObjectComponents">
-      <UniqueIdentifier>{9b4d0c0b-0b82-43ad-9c5d-0d2cf410dcd4}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="AABBCollider.cpp" />
+    <ClCompile Include="ARBBCollider.cpp" />
+    <ClCompile Include="..\include\imgui\imgui.cpp" />
+    <ClCompile Include="..\include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\include\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\include\imgui\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="BinaryPartitionTree.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="CommandBuffer.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="DebugManager.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GuiManager.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InputAxis.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Octant.cpp" />
+    <ClCompile Include="OctTree.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
+    <ClCompile Include="TextureImages.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VulkanManager.cpp" />
+    <ClCompile Include="VulkanEngine.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
+    <ClCompile Include="PhysicsManager2D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="InputAxis.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandBuffer.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereCollider.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
-    </ClCompile>
-    <ClCompile Include="AABBCollider.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
-    </ClCompile>
-    <ClCompile Include="ARBBCollider.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
-    </ClCompile>
-    <ClCompile Include="Octant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureImages.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui_impl_glfw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\imgui\imgui_impl_vulkan.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="GuiManager.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsObject.cpp">
-      <Filter>Source Files\GameObjectComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Source Files\GameObjectComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files\GameObjectComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsObject.cpp">
-      <Filter>Source Files\GameObjectComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryPartitionTree.cpp">
-      <Filter>Source Files</Filter>
-    <ClCompile Include="OctTree.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
-    </ClCompile>
+    <ClInclude Include="AABBCollider.h" />
+    <ClInclude Include="AngleAxis.h" />
+    <ClInclude Include="ARBBCollider.h" />
+    <ClInclude Include="BinaryPartitionTree.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="ColliderTypes.h" />
+    <ClInclude Include="CollisionData.h" />
+    <ClInclude Include="CommandBuffer.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="Controls.h" />
+    <ClInclude Include="DebugManager.h" />
+    <ClInclude Include="DebugShape.h" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="Fixed_Data.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GuiManager.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="InputAxis.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="InputStates.h" />
+    <ClInclude Include="KDTree.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshTypes.h" />
+    <ClInclude Include="Octant.h" />
+    <ClInclude Include="PartitionTree.h" />
+    <ClInclude Include="OctTree.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="PhysicsLayers.h" />
+    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="ProjectionData.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="SwapChain.h" />
+    <ClInclude Include="SwapChainSupportDetails.h" />
+    <ClInclude Include="TextureImages.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="TransformData.h" />
+    <ClInclude Include="UniformBufferObject.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VulkanManager.h" />
+    <ClInclude Include="WindowManager.h" />
+    <ClInclude Include="PhysicsManager2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformData.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="InputAxis.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandBuffer.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChainSupportDetails.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="QueueFamilyIndices.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformBufferObject.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshTypes.h">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Controls.h">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="InputStates.h">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsLayers.h">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Header Files\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereCollider.h">
-      <Filter>Header Files\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="ColliderTypes.h">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="AABBCollider.h">
-      <Filter>Header Files\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="ARBBCollider.h">
-      <Filter>Header Files\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="Octant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionData.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectionData.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="AngleAxis.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>Header Files\GameObjectComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryPartitionTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PartitionTree.h">
-      <Filter>Header Files</Filter>
-    <ClInclude Include="KDTree.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Fixed_Data.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadTree.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="OctTree.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
+    <CustomBuild Include="compile.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TextureImages.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="GuiManager.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugShape.h">
-      <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>Header Files\GameObjectComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files\GameObjectComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files\GameObjectComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\BasicShader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\BasicShader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\BasicShaderUnlit.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\SkyBox.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\SkyBox.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\DebugShader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\DebugShader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="compile.bat">
-      <Filter>Resource Files\Shaders</Filter>
-    </CustomBuild>
+    <None Include="shaders\BasicShader.frag" />
+    <None Include="shaders\BasicShader.vert" />
+    <None Include="shaders\BasicShaderUnlit.frag" />
+    <None Include="shaders\DebugShader.frag" />
+    <None Include="shaders\DebugShader.vert" />
+    <None Include="shaders\SkyBox.frag" />
+    <None Include="shaders\SkyBox.vert" />
   </ItemGroup>
 </Project>

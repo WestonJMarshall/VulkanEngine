@@ -18,7 +18,6 @@ private:
 	AngleAxis angularVelocity;
 	AngleAxis angularAcceleration;
 
-	bool affectedByGravity;
 	bool alive;
 	PhysicsLayers physicsLayer;
 	int ID;
@@ -32,6 +31,7 @@ private:
 
 	void SortDimensions(void);
 public:
+	bool affectedByGravity;
 	size_t dimensionCount = 0;
 
 	bool SharesDimension(std::shared_ptr<PhysicsObject> other);
