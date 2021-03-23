@@ -254,10 +254,10 @@ void PhysicsObject::ApplyForce(glm::vec3 force, glm::vec3 point, bool applyMass)
 
 	//Angular force is already accounting for mass, no need to double calculate
 	if (angularForce > 0.001f) {
-		ApplyTorque(glm::angleAxis(angularForce, axis), false);
+		//ApplyTorque(glm::angleAxis(angularForce, axis), false);
 	}
 
-	acceleration += force - perpendicularForce;
+	acceleration += force;
 }
 
 void PhysicsObject::ApplyTorque(glm::quat torque, bool applyMass)
