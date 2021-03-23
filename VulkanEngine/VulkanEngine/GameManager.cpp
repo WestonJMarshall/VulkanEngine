@@ -198,17 +198,17 @@ void GameManager::Update()
 
 	Camera::GetMainCamera()->GetTransform()->Translate(moveDirection * cameraSpeed * Time::GetDeltaTime(), true);
 
-	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Left)) {
+	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(-500.0f, 0.0f, 0.0f));
-	//}
-	//if (InputManager::GetInstance()->GetKeyPressed(Controls::Right)) {
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-50.0f, 0.0f, 0.0f));
+	}
+	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(500.0f, 0.0f, 0.0f));
-	//}
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(50.0f, 0.0f, 0.0f));
+	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
-		gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 5000.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 5000.0f, 0.0f));
 	}
 
 	//Update Game Objects

@@ -485,9 +485,9 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
 		}
        
 
-        if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
+        //if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
             //physicsObject1->ApplyForce(-force[1], data.contactPoint);
-        }
+        //}
     }
 }
 
