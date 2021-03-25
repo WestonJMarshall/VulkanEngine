@@ -10,6 +10,17 @@ class VulkanManager
 private:
 	static VulkanManager* instance;
 
+	int frame = 0;
+	double time = 0;
+	double timeBase = 0;
+	double accumulator = 0.0;
+	int fps = 0;
+	double FPStime = 0;
+	double physicsTime = 0.012;
+	double callTime = 0;
+	double oldCallTime = 0;
+
+
 	// TO MOVE GUI STUFF
 	std::vector<VkFramebuffer> guiFrameBuffers;
 	VkRenderPass imGuiRenderPass;
@@ -73,6 +84,8 @@ private:
 	/// </summary>
 	void Update();
 
+	void checkPhysicsTimeStep();
+
 #pragma endregion
 
 #pragma region Physical Device Management
@@ -116,6 +129,8 @@ private:
 
 public:
 	inline static bool initGui;
+	double dt = 0;
+	double callDT = 0;
 
 #pragma region Singleton
 

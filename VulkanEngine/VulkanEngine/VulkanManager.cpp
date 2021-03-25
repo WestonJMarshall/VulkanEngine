@@ -418,13 +418,50 @@ void VulkanManager::Update()
 
 	GameManager::GetInstance()->Update();
 
-	PhysicsManager::GetInstance()->Update();
+	checkPhysicsTimeStep();
+
+	//PhysicsManager::GetInstance()->Update();
 
 	DebugManager::GetInstance()->Update();
 
 	EntityManager::GetInstance()->Update();
 	
 	
+}
+
+void VulkanManager::checkPhysicsTimeStep() 
+{
+	//get current time and time since last update
+	time = glfwGetTime();
+	dt = time - timeBase;
+
+	//if more time has passed than the timeStep of .012
+	if (dt > physicsTime) {
+		//calculate fps
+		if (time - FPStime > 1.0) {
+			fps = frame / (time - FPStime);
+			FPStime = time;
+			frame = 0; //reset frame count
+		}
+		timeBase = time;
+
+		//give deltatime a max of .25 for program to respond
+		if (dt > 0.25) {
+			dt = 0.25;
+		}
+		//std::cout << "dt: " << Time::GetDeltaTime() << std::endl;
+		accumulator += dt;
+
+		while (accumulator >= physicsTime)
+		{
+			oldCallTime = callTime;
+			PhysicsManager::GetInstance()->Update();
+			callTime = glfwGetTime();
+			callDT = callTime - oldCallTime;
+			accumulator -= physicsTime;
+		}
+	}
+
 }
 
 #pragma endregion

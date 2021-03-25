@@ -3,6 +3,7 @@
 
 #include "DebugManager.h"
 #include "PhysicsManager.h"
+#include "VulkanManager.h"
 
 
 #include "Collider.h"
@@ -287,7 +288,7 @@ void PhysicsObject::Update()
 
 
 		//Apply acceleration
-		velocity += acceleration * Time::GetDeltaTime();
+		velocity += acceleration * (float)(VulkanManager::GetInstance()->dt);
 		acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		angularVelocity += angularAcceleration * Time::GetDeltaTime();//glm::mix(angularVelocity, angularAcceleration * angularVelocity, Time::GetDeltaTime());
@@ -295,7 +296,7 @@ void PhysicsObject::Update()
 		angularAcceleration = AngleAxis();
 
 		//Apply velocity
-		transform->Translate(velocity * Time::GetDeltaTime());
+		transform->Translate(velocity * (float)(VulkanManager::GetInstance()->dt));
 
 		transform->Rotate((angularVelocity * Time::GetDeltaTime()).ToQuaternion()/*glm::mix(orientation, angularVelocity * orientation, Time::GetDeltaTime())*/);
 	}

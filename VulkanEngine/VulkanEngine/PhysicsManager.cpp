@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PhysicsManager.h"
 #include "GameObject.h"
+#include "VulkanManager.h"
 
 #pragma region Singleton
 
@@ -466,7 +467,8 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
     glm::vec3 force[2];
     
     if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
-        force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / Time::GetDeltaTime();
+        force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
+		//force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / Time::GetDeltaTime();
         physicsObject1->ApplyForce(force[0], data.contactPoint);
 
         if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
@@ -475,19 +477,14 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
     }
 
     if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
-        force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / Time::GetDeltaTime();
+        force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) /(float)(VulkanManager::GetInstance()->dt);
+		//force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / Time::GetDeltaTime();
 		if (data.collisionNormal != glm::vec3(0, 1, 0) && data.collisionNormal != glm::vec3(0, -1, 0)) {
 			physicsObject2->ApplyForce(force[1], data.contactPoint);
 		}
 		else {
-			std::cout << force[1].x << ", " << force[1].y << std::endl;
 			physicsObject2->ApplyForce(force[1], data.contactPoint);
 		}
-       
-
-        //if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
-            //physicsObject1->ApplyForce(-force[1], data.contactPoint);
-        //}
     }
 }
 

@@ -200,11 +200,11 @@ void GameManager::Update()
 
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-50.0f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-5.0f, 0.0f, 0.0f));
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(50.0f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(5.0f, 0.0f, 0.0f));
 	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
