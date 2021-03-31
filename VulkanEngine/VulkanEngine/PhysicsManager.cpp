@@ -6,6 +6,7 @@
 #pragma region Singleton
 
 PhysicsManager* PhysicsManager::instance = nullptr;
+float oldTime = 0;
 
 PhysicsManager* PhysicsManager::GetInstance()
 {
@@ -437,8 +438,8 @@ void PhysicsManager::ResolveCollision(std::shared_ptr<PhysicsObject> physicsObje
     //Double Dynamic
     if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
         //TODO: scale resolution movement based on velocity and mass
-        physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -0.5f);
-        physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * 0.5f);
+        physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -0.4f);
+        physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * 0.4f);
     }
     else { //One Dynamic and One Static
         //Figure out which object is static and which is dynamic
@@ -462,29 +463,35 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
     projectionMult[0] = glm::dot(physicsObject1->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
     projectionMult[1] = glm::dot(physicsObject2->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
 
-	//std::cout << "dot product: "<< projectionMult[0] << std::endl;
-	//std::cout << "dot product 2: " << projectionMult[1] << std::endl;
     glm::vec3 force[2];
+
+	float scaledMass1 = physicsObject1->GetMass() / 10;
+	float scaledMass2 = physicsObject2->GetMass() / 10;
+
     
     if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
-        force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
-		//force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / Time::GetDeltaTime();
+		//dont apply drag if object is on top
+		force[0] = (data.collisionNormal * projectionMult[0] * -0.5f) / (float)(VulkanManager::GetInstance()->dt);
+		if (physicsObject2->GetVelocity().x != 0) {
+			force[0].x = physicsObject2->GetVelocity().x * 4.0f;
+		}
         physicsObject1->ApplyForce(force[0], data.contactPoint);
 
         if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
+			force[0] = (data.collisionNormal * projectionMult[0] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
             physicsObject2->ApplyForce(-force[0], data.contactPoint);
         }
     }
 
     if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
-        force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) /(float)(VulkanManager::GetInstance()->dt);
-		//force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / Time::GetDeltaTime();
-		if (data.collisionNormal != glm::vec3(0, 1, 0) && data.collisionNormal != glm::vec3(0, -1, 0)) {
-			physicsObject2->ApplyForce(force[1], data.contactPoint);
+		//if obj1 is moving, apply a "drag" to obj2
+		force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
+		if (physicsObject1->GetVelocity().x != 0) {
+			force[1].x = physicsObject1->GetVelocity().x * 8.0f;
 		}
-		else {
-			physicsObject2->ApplyForce(force[1], data.contactPoint);
-		}
+
+		physicsObject2->ApplyForce(force[1], data.contactPoint);
+		
     }
 }
 

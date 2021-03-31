@@ -13,7 +13,7 @@ class PhysicsManager
 private:
 	static PhysicsManager* instance;
 
-	float gravity = 0.08f;
+	float gravity = 0.082f;
 	glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
 
 	std::vector<std::vector<std::shared_ptr<PhysicsObject>>> physicsObjects;

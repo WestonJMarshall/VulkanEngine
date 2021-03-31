@@ -281,24 +281,36 @@ void PhysicsObject::Init()
 
 void PhysicsObject::Update()
 {
+	float friction = 0.002f;
 	if (alive) {
 		if (affectedByGravity) {
-			ApplyForce(PhysicsManager::GetInstance()->GetGravity() * PhysicsManager::GetInstance()->GetGravityDirection());
+			ApplyForce(PhysicsManager::GetInstance()->GetGravity() * PhysicsManager::GetInstance()->GetGravityDirection(), false);
 		}
-
 
 		//Apply acceleration
 		velocity += acceleration * (float)(VulkanManager::GetInstance()->dt);
 		acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 
-		angularVelocity += angularAcceleration * Time::GetDeltaTime();//glm::mix(angularVelocity, angularAcceleration * angularVelocity, Time::GetDeltaTime());
+		angularVelocity += angularAcceleration * (float)(VulkanManager::GetInstance()->dt);//glm::mix(angularVelocity, angularAcceleration * angularVelocity, Time::GetDeltaTime());
 		//std::cout << angularVelocity << std::endl;
 		angularAcceleration = AngleAxis();
 
 		//Apply velocity
 		transform->Translate(velocity * (float)(VulkanManager::GetInstance()->dt));
 
-		transform->Rotate((angularVelocity * Time::GetDeltaTime()).ToQuaternion()/*glm::mix(orientation, angularVelocity * orientation, Time::GetDeltaTime())*/);
+		transform->Rotate((angularVelocity * (float)(VulkanManager::GetInstance()->dt)).ToQuaternion()/*glm::mix(orientation, angularVelocity * orientation, Time::GetDeltaTime())*/);
+
+		if (velocity.x > 0.005f) {
+			velocity.x -= friction;
+		}
+		else if(velocity.x < 0.005) {
+			velocity.x += friction;
+		}
+
+		if (velocity.x > -0.005f && velocity.x < 0.005f) {
+			velocity.x = 0;
+		}
+		
 	}
 
 	//Update collider

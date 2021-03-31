@@ -32,6 +32,7 @@ private:
 	void SortDimensions(void);
 public:
 	bool affectedByGravity;
+	bool isColliding;
 	size_t dimensionCount = 0;
 
 	bool SharesDimension(std::shared_ptr<PhysicsObject> other);

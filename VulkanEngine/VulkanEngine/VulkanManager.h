@@ -13,10 +13,8 @@ private:
 	int frame = 0;
 	double time = 0;
 	double timeBase = 0;
-	double accumulator = 0.0;
 	int fps = 0;
 	double FPStime = 0;
-	double physicsTime = 0.012;
 	double callTime = 0;
 	double oldCallTime = 0;
 
@@ -131,6 +129,8 @@ public:
 	inline static bool initGui;
 	double dt = 0;
 	double callDT = 0;
+	double accumulator = 0.0;
+	double physicsTime = 0.012;
 
 #pragma region Singleton
 

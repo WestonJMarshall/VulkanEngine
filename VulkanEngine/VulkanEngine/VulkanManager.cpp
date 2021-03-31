@@ -455,9 +455,9 @@ void VulkanManager::checkPhysicsTimeStep()
 		while (accumulator >= physicsTime)
 		{
 			oldCallTime = callTime;
-			PhysicsManager::GetInstance()->Update();
 			callTime = glfwGetTime();
 			callDT = callTime - oldCallTime;
+			PhysicsManager::GetInstance()->Update();
 			accumulator -= physicsTime;
 		}
 	}

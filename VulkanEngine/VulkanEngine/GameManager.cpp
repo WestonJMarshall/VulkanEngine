@@ -16,6 +16,7 @@ bool octTreeDespawned = false;
 bool linesActive = false;
 
 
+
 #pragma region Singleton
 
 GameManager* GameManager::instance = nullptr;
@@ -65,33 +66,33 @@ void GameManager::Init()
 	//Setup Lights
 	lights.push_back(std::make_shared<Light>(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.9f, 0.1f, 0.1f), 23.0f, 1.2f));
 
-	for (int i = 0; i < 75; i++) {
+	//for (int i = 0; i < 75; i++) {
 
-		float randX = (float)rand() / (float)RAND_MAX;
-		float randRange = Range - -Range;
-		float finalRandX = (randX * randRange) + -Range;
-		float randY = (float)rand() / (float)RAND_MAX;
-		float finalRandY = (randY * randRange) + -Range;
-		float randZ = (float)rand() / (float)RAND_MAX;
-		float finalRandZ = (randZ * randRange) + -Range;
+		//float randX = (float)rand() / (float)RAND_MAX;
+		//float randRange = Range - -Range;
+		//float finalRandX = (randX * randRange) + -Range;
+		//float randY = (float)rand() / (float)RAND_MAX;
+		//float finalRandY = (randY * randRange) + -Range;
+		//float randZ = (float)rand() / (float)RAND_MAX;
+		//float finalRandZ = (randZ * randRange) + -Range;
 
 		//add a cube to the gameobject vector
 		//gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
 		//set data, place position at random coords
 
-		if (i >= 50 && i <= 75) {
+		//if (i >= 50 && i <= 75) {
 			//gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, finalRandZ)));
-		}
-		else {
+		//}
+		//else {
 			//gameObjects[i]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(finalRandX, finalRandY, 0.0f)));
-		}
+		//}
 
 		//gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
 		//gameObjects[i]->GetTransform()->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 		//gameObjects[i]->SetName("Cube");
 		//gameObjects[i]->Init();
-	}
+	//}
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
@@ -200,15 +201,15 @@ void GameManager::Update()
 
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-5.0f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-0.8f, 0.0f, 0.0f));
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(5.0f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.8f, 0.0f, 0.0f));
 	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 5000.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 100.0f, 0.0f));
 	}
 
 	//Update Game Objects
