@@ -425,8 +425,6 @@ void VulkanManager::Update()
 	DebugManager::GetInstance()->Update();
 
 	EntityManager::GetInstance()->Update();
-	
-	
 }
 
 void VulkanManager::checkPhysicsTimeStep() 

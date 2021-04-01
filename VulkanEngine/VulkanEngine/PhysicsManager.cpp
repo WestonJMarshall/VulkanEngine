@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "VulkanManager.h"
 
+#define COLLISION_STEPS 4
+
 #pragma region Singleton
 
 PhysicsManager* PhysicsManager::instance = nullptr;
@@ -107,7 +109,7 @@ void PhysicsManager::DetectCollisions()
         if (physicsObjects[PhysicsLayers::Dynamic][i]->GetAlive()) {
             for (size_t j = i + 1; j < physicsObjects[PhysicsLayers::Dynamic].size(); j++) {
                 if (physicsObjects[PhysicsLayers::Dynamic][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], data)) {
+                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], COLLISION_STEPS, data)) {
                         ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], data);
                         physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
                         physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject());
@@ -117,7 +119,7 @@ void PhysicsManager::DetectCollisions()
 
             for (size_t j = 0; j < physicsObjects[PhysicsLayers::Static].size(); j++) {
                 if (physicsObjects[PhysicsLayers::Static][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], data)) {
+                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], COLLISION_STEPS, data)) {
                         ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], data);
                         physicsObjects[PhysicsLayers::Static][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
                         physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][j]->GetGameObject());
@@ -127,7 +129,7 @@ void PhysicsManager::DetectCollisions()
 
             for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
                 if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Trigger][j], data)) {
+                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
                         physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
                         physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
                     }
@@ -141,7 +143,7 @@ void PhysicsManager::DetectCollisions()
         if (physicsObjects[PhysicsLayers::Static][i]->GetAlive()) {
             for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
                 if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Static][i], physicsObjects[PhysicsLayers::Trigger][j], data)) {
+                    if (CheckCollision(physicsObjects[PhysicsLayers::Static][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
                         physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][i]->GetGameObject());
                         physicsObjects[PhysicsLayers::Static][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
                     }
@@ -178,6 +180,65 @@ bool PhysicsManager::CheckCollision(std::shared_ptr<PhysicsObject> physicsObject
 
     //Otherwise do the SAT check
     return SAT(physicsObject1->GetCollider(), physicsObject2->GetCollider(), data);
+}
+
+bool PhysicsManager::CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, int numSteps, CollisionData& data)
+{
+    // If the 2 objects don't share a dimension::
+    if (!physicsObject1->SharesDimension(physicsObject2))
+        return false;
+
+    glm::vec3 preCheckPosition = physicsObject1->GetTransform()->GetPosition();
+    //Iterate through the number of steps set
+    for (float i = 1; i >= 0; i -= 1.0f / numSteps)
+    {
+        //First, we combine both objects velocity vectors together, meaning we act as though one of the objects is static
+        glm::vec3 totalStepTranslation = -((physicsObject1->GetVelocity() * i) + (physicsObject2->GetVelocity() * i));
+
+        physicsObject1->GetTransform()->SetPosition(physicsObject1->GetTransform()->GetPosition() + totalStepTranslation);
+
+        //If one of the objects is a sphere do the sphere collider check
+        if (physicsObject1->GetCollider()->GetColliderType() == ColliderTypes::Sphere) {
+
+            if (CheckSphereCollision(std::static_pointer_cast<SphereCollider>(physicsObject1->GetCollider()), physicsObject2->GetCollider(), data))
+            {
+                physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+                return true;
+            }
+            physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+        }
+
+        else if (physicsObject2->GetCollider()->GetColliderType() == ColliderTypes::Sphere) {
+            if (CheckSphereCollision(std::static_pointer_cast<SphereCollider>(physicsObject2->GetCollider()), physicsObject1->GetCollider(), data))
+            {
+                physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+                return true;
+            }
+            physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+        }
+
+        //If both objects are AABB do the AABB check
+        else if (physicsObject1->GetCollider()->GetColliderType() == ColliderTypes::AABB && physicsObject2->GetCollider()->GetColliderType() == ColliderTypes::AABB) {
+            if (CheckAABBCollision(std::static_pointer_cast<AABBCollider>(physicsObject1->GetCollider()), std::static_pointer_cast<AABBCollider>(physicsObject2->GetCollider()), data)) {
+                physicsObject1->SetColliderColor(glm::vec3(1.0f, 0.0f, 0.0f));
+                physicsObject2->SetColliderColor(glm::vec3(1.0f, 0.0f, 0.0f));
+                physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+                return true;
+            }
+            physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+        }
+
+        //Otherwise do the SAT check
+        else {
+            if (SAT(physicsObject1->GetCollider(), physicsObject2->GetCollider(), data))
+            {
+                physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+                return true;
+            }
+            physicsObject1->GetTransform()->SetPosition(preCheckPosition);
+        }
+    }
+    return false;
 }
 
 bool PhysicsManager::SharesDimension(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2)

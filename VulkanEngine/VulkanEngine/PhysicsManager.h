@@ -98,6 +98,7 @@ public:
 
 	bool SharesDimension(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2);
 	bool CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData& data);
+	bool CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, int numSteps, CollisionData& data);
 
 	/// <summary>
 	/// Checks for a collision between a sphere collider and any other type of collider

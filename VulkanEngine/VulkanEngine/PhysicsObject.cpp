@@ -303,7 +303,7 @@ void PhysicsObject::Update()
 		if (velocity.x > 0.005f) {
 			velocity.x -= friction;
 		}
-		else if(velocity.x < 0.005) {
+		else if(velocity.x < -0.005) {
 			velocity.x += friction;
 		}
 

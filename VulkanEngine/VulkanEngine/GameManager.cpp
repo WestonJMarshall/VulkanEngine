@@ -139,6 +139,7 @@ void GameManager::Update()
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::RightClick)) {
 		float x = InputManager::GetInstance()->GetMousePosition().x;
 		float y = InputManager::GetInstance()->GetMousePosition().y;
+
 		//inputs
 		float rangeXStartMouse = 0;
 		float rangeXEndMouse = 800;
