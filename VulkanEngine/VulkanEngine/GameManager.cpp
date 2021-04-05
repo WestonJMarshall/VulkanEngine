@@ -100,17 +100,17 @@ void GameManager::Init()
 
 	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -2.5f, 0)));
 	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(10.0f, 0.5f, 1.0f));
-	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 1.0f, false);
+	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 10.0f, false);
 	gameObjects[gameObjects.size() - 3]->SetName("Floor");
 
 	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
 	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
 	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
 
 	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
 	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
 	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
 
 	gameObjects[gameObjects.size() - 3]->Init();
@@ -166,7 +166,7 @@ void GameManager::Update()
 		//set data, place position at random coords
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(newX, newY, 0)));
 		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 1.0f, true);
+		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 5.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
 		
 		gameObjects[lastIndex]->Init();
@@ -202,15 +202,15 @@ void GameManager::Update()
 
 	if (InputManager::GetInstance()->GetKey(Controls::Left)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-0.8f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(-0.8f, 0.0f, 0.0f), false);
 	}
 	if (InputManager::GetInstance()->GetKey(Controls::Right)) {
 	//	//gameObjects[gameObjects.size() - 2]->GetPhysicsObject()->ApplyTorque(glm::angleAxis(-300.0f, glm::vec3(0, 1, 0)), false);
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.8f, 0.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.8f, 0.0f, 0.0f), false);
 	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::Jump)) {
-		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 100.0f, 0.0f));
+		gameObjects[1]->GetPhysicsObject()->ApplyForce(glm::vec3(0.0f, 1000.0f, 0.0f));
 	}
 
 	//Update Game Objects

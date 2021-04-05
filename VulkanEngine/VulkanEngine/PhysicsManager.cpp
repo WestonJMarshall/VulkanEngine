@@ -532,26 +532,24 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
     
     if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
 		//dont apply drag if object is on top
-		force[0] = (data.collisionNormal * projectionMult[0] * -0.5f) / (float)(VulkanManager::GetInstance()->dt);
-		//if (physicsObject2->GetVelocity().x != 0) {
-			//force[0].x = physicsObject2->GetVelocity().x * 6.0f;
-		//}
-        physicsObject1->ApplyForce(force[0], data.contactPoint);
+		force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->dt);
+        physicsObject1->ApplyForce(force[0], data.contactPoint, false);
 
         if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
-			force[0] = (data.collisionNormal * projectionMult[0] * -0.5f) / (float)(VulkanManager::GetInstance()->dt);
-            physicsObject2->ApplyForce(-force[0], data.contactPoint);
+			force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
+            physicsObject2->ApplyForce(-force[0], data.contactPoint, false);
         }
     }
 
     if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
 		//if obj1 is moving, and obj2 is not, apply a "drag" to obj2
 		force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
+		//if obj1 is moving and obj2 is not, apply a "drag" force to obj2
 		if (physicsObject1->GetVelocity().x != 0 && physicsObject2->GetVelocity().x == 0.0f) {
 			force[1].x = physicsObject1->GetVelocity().x * 50.0f;
 		}
 
-		physicsObject2->ApplyForce(force[1], data.contactPoint);
+		physicsObject2->ApplyForce(force[1], data.contactPoint, false);
 		
     }
 }
