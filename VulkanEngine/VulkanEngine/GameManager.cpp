@@ -177,7 +177,7 @@ void GameManager::Update()
 		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
 		int lastIndex = gameObjects.size() - 1;
-		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-5.0f, 1.0f, 0)));
+		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-10.0f, 1.0f, 0)));
 		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
 
@@ -193,7 +193,7 @@ void GameManager::Update()
 
 		float yAngle = -(rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
 
-		gameObjects[lastIndex]->GetPhysicsObject()->ApplyForce(glm::vec3(600.0f, yAngle * 45, 0.0f), false);
+		gameObjects[lastIndex]->GetPhysicsObject()->ApplyForce(glm::vec3(600.0f, yAngle * 50, 0.0f), false);
 	}
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
