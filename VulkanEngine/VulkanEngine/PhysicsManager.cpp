@@ -543,13 +543,19 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
 
     if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
 		//if obj1 is moving, and obj2 is not, apply a "drag" to obj2
-		force[1] = (data.collisionNormal * projectionMult[1] * -1.0f) / (float)(VulkanManager::GetInstance()->dt);
+		force[1] = (data.collisionNormal * projectionMult[1] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
 		//if obj1 is moving and obj2 is not, apply a "drag" force to obj2
 		if (physicsObject1->GetVelocity().x != 0 && physicsObject2->GetVelocity().x == 0.0f) {
 			force[1].x = physicsObject1->GetVelocity().x * 50.0f;
 		}
 
 		physicsObject2->ApplyForce(force[1], data.contactPoint, false);
+		//physicsObject1->ApplyForce(-force[1], data.contactPoint, false);
+		//apply force to obj1 if it is moving only
+		if (physicsObject2->GetVelocity().x > 0) {
+			physicsObject1->ApplyForce(-force[1], data.contactPoint, false);
+		}
+		
 		
     }
 }
