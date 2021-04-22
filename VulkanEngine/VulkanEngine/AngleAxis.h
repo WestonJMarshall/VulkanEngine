@@ -6,17 +6,29 @@ struct AngleAxis {
 public:
 	glm::vec3 axis;
 	float angle;
+	bool negative;
 
 #pragma region Constructors
 
-	AngleAxis(glm::vec3 axis = glm::vec3(0, 1, 0), float angle = 0) {
+	AngleAxis(glm::vec3 axis = glm::vec3(0, 0, 1), float angle = 0) {
 		this->axis = axis;
 		this->angle = angle;
+		this->negative = false;
 	}
 
 	AngleAxis(glm::quat quat) {
 		angle = 2 * glm::acos(quat.w);
-		axis = glm::vec3(quat.x, quat.y, quat.z) / glm::sin(angle / 2);
+		//axis = glm::vec3(quat.x, quat.y, quat.z) / glm::sin(angle / 2);
+		//axis = glm::vec3(quat.x, quat.y, quat.z) / glm::sin(angle / 2);
+		axis = glm::vec3(0, 0, 1.0f);
+		if (quat.w <= 0.0f)
+		{
+			negative = true;
+		}
+		else
+		{
+			negative = false;
+		}
 	}
 
 #pragma endregion
@@ -25,6 +37,7 @@ public:
 
 	glm::quat ToQuaternion() {
 		glm::vec4 value = glm::vec4(axis * glm::sin(angle / 2), glm::cos(angle / 2));
+		if (negative) { value.z *= -1.0f; }
 		return {value.w, value.x, value.y, value.z};
 	}
 
@@ -57,7 +70,8 @@ public:
 	AngleAxis operator+=(const AngleAxis& other) {
 		AngleAxis sum = *this + other;
 		angle = sum.angle;
-		axis = sum.axis;
+		axis = glm::vec3(0,0,1);
+		negative = other.negative;
 		return *this;
 	}
 

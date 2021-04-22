@@ -120,6 +120,8 @@ void Transform::Translate(glm::vec3 translation, bool localSpace)
 void Transform::Rotate(glm::quat rotation)
 {
 	orientation = rotation * orientation;
+	orientation.x = 0;
+	orientation.y = 0;
 
 	//Mark the model matrix for regeneration
 	isDirty = true;

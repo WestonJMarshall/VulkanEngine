@@ -255,7 +255,7 @@ void PhysicsObject::ApplyForce(glm::vec3 force, glm::vec3 point, bool applyMass)
 
 	//Angular force is already accounting for mass, no need to double calculate
 	if (angularForce > 0.001f) {
-		//ApplyTorque(glm::angleAxis(angularForce, axis), false);
+		ApplyTorque(glm::angleAxis(angularForce, axis), false);
 	}
 
 	acceleration += force;
@@ -268,6 +268,8 @@ void PhysicsObject::ApplyTorque(glm::quat torque, bool applyMass)
 	}
 	else {
 		angularAcceleration += torque;
+		if (torque.z < 0.0f) { angularAcceleration.negative = false; }
+		else{ angularAcceleration.negative = true; }
 	}
 }
 
@@ -290,9 +292,7 @@ void PhysicsObject::Update()
 		//Apply acceleration
 		velocity += acceleration * (float)(VulkanManager::GetInstance()->dt);
 		acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
-
 		angularVelocity += angularAcceleration * (float)(VulkanManager::GetInstance()->dt);//glm::mix(angularVelocity, angularAcceleration * angularVelocity, Time::GetDeltaTime());
-		//std::cout << angularVelocity << std::endl;
 		angularAcceleration = AngleAxis();
 
 		//Apply velocity
