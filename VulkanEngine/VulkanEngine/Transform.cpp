@@ -165,8 +165,9 @@ void Transform::Init()
 {
 }
 
-void Transform::Update()
+void Transform::Update(float dt, int timeType)
 {
+	if (timeType != 0) { return; }
 	if (DebugManager::GetInstance()->GetDrawHandles()) {
 		DrawHandles();
 	}

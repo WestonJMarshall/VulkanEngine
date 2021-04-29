@@ -174,7 +174,7 @@ public:
 	/// <summary>
 	/// Updates the velocity and position of the object
 	/// </summary>
-	virtual void Update() override;
+	virtual void Update(float dt, int timeType) override;
 
 #pragma endregion
 

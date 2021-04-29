@@ -30,6 +30,7 @@ public:
 #pragma region Accessors
 
 	std::vector<std::shared_ptr<Light>> GetLights();
+	std::vector<std::shared_ptr<GameObject>> GetGameObjects();
 
 	/// <summary>
 	/// Finds a gameobject with the specified name

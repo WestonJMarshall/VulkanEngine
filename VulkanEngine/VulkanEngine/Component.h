@@ -40,7 +40,7 @@ public:
 	/// <summary>
 	/// Called once per frame used to update the component's variables
 	/// </summary>
-	virtual void Update() = 0;
+	virtual void Update(float dt, int timeType) = 0;
 
 #pragma endregion
 };

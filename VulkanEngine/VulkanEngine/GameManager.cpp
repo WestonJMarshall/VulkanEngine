@@ -8,6 +8,7 @@
 #include "OctTree.h"
 #include "KDTree.h"
 #include "QuadTree.h"
+#include "VulkanManager.h"
 
 #define MshMngr MeshManager::GetInstance()
 KD_tree* KDtree;
@@ -37,6 +38,11 @@ GameManager* GameManager::GetInstance()
 std::vector<std::shared_ptr<Light>> GameManager::GetLights()
 {
 	return lights;
+}
+
+std::vector<std::shared_ptr<GameObject>> GameManager::GetGameObjects()
+{
+	return gameObjects;
 }
 
 std::shared_ptr<GameObject> GameManager::GetObjectByName(std::string name)
@@ -100,17 +106,17 @@ void GameManager::Init()
 
 	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -2.5f, 0)));
 	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(10.0f, 0.5f, 1.0f));
-	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 10.0f, false);
+	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::ARBB, 10.0f, false);
 	gameObjects[gameObjects.size() - 3]->SetName("Floor");
 
 	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
 	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
+    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::ARBB, 10.0f, true);
 	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
 
 	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
 	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
+	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::ARBB, 10.0f, true);
 	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
 
 	gameObjects[gameObjects.size() - 3]->Init();
@@ -166,7 +172,7 @@ void GameManager::Update()
 		//set data, place position at random coords
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(newX, newY, 0)));
 		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 5.0f, true);
+		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::ARBB, 5.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
 		
 		gameObjects[lastIndex]->Init();
@@ -178,7 +184,7 @@ void GameManager::Update()
 
 		int lastIndex = gameObjects.size() - 1;
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-10.0f, 1.0f, 0)));
-		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
+		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::ARBB, 10.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
 
 		gameObjects[lastIndex]->Init();
@@ -238,7 +244,7 @@ void GameManager::Update()
 
 	//Update Game Objects
 	for (size_t i = 0; i < gameObjects.size(); i++) {
-		gameObjects[i]->Update();
+		gameObjects[i]->Update(VulkanManager::GetInstance()->dt, 0);
 	}
 }
 

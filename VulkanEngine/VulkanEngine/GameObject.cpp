@@ -4,6 +4,7 @@
 #include "DebugManager.h"
 #include "EntityManager.h"
 #include "PhysicsManager.h"
+#include "VulkanManager.h"
 
 #pragma region Constructor
 
@@ -117,10 +118,10 @@ void GameObject::Init()
 	}
 }
 
-void GameObject::Update()
+void GameObject::Update(float dt, int timeType)
 {
 	for (int i = 0; i < components.size(); i++) {
-		components[i]->Update();
+		components[i]->Update(dt, timeType);
 	}
 }
 

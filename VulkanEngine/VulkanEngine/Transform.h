@@ -142,7 +142,7 @@ public:
 
 	virtual void Init() override;
 
-	virtual void Update() override;
+	virtual void Update(float dt, int timeType) override;
 
 #pragma endregion
 };

@@ -1,9 +1,10 @@
 #include "pch.h"
+#include "GameManager.h"
 #include "PhysicsManager.h"
 #include "GameObject.h"
 #include "VulkanManager.h"
 
-#define COLLISION_STEPS 4
+#define COLLISION_STEPS 1
 
 #pragma region Singleton
 
@@ -92,6 +93,11 @@ std::shared_ptr<PhysicsObject> PhysicsManager::GetPhysicsObject(int ID)
 
 void PhysicsManager::Update()
 {
+    //update objects
+    for (size_t i = 0; i < GameManager::GetInstance()->GetGameObjects().size(); i++) {
+        GameManager::GetInstance()->GetGameObjects()[i]->Update(VulkanManager::GetInstance()->callDT, 1);
+    }
+
     //Check for collisions
     DetectCollisions();
 }
@@ -532,18 +538,18 @@ void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObjec
     
     if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
 		//dont apply drag if object is on top
-		force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->dt);
+		force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->callDT);
         physicsObject1->ApplyForce(force[0], data.contactPoint, false);
 
         if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
-			force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
+			force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass1) / (float)(VulkanManager::GetInstance()->callDT);
             physicsObject2->ApplyForce(-force[0], data.contactPoint, false);
         }
     }
 
     if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
 		//if obj1 is moving, and obj2 is not, apply a "drag" to obj2
-		force[1] = (data.collisionNormal * projectionMult[1] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
+		force[1] = (data.collisionNormal * projectionMult[1] * -scaledMass1) / (float)(VulkanManager::GetInstance()->callDT);
 		//if obj1 is moving and obj2 is not, apply a "drag" force to obj2
 		if (physicsObject1->GetVelocity().x != 0 && physicsObject2->GetVelocity().x == 0.0f) {
 			force[1].x = physicsObject1->GetVelocity().x * 50.0f;

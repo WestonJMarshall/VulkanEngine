@@ -142,7 +142,7 @@ public:
 	/// <summary>
 	/// Updates this objects variables once per frame
 	/// </summary>
-	virtual void Update();
+	virtual void Update(float dt, int timeType);
 
 #pragma endregion
 };
