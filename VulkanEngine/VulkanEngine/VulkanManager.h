@@ -17,7 +17,14 @@ private:
 	double FPStime = 0;
 	double callTime = 0;
 	double oldCallTime = 0;
-
+	double currentTime = 0;
+	double elapsedTime = 0;
+	double previousTime = 0;
+	double lagTime = 0;
+	double kFPS = 60;
+	double kFrameTime = 1 / kFPS;
+	
+	double kMPF = 1000 * kFrameTime;
 
 	// TO MOVE GUI STUFF
 	std::vector<VkFramebuffer> guiFrameBuffers;
@@ -131,6 +138,7 @@ public:
 	double callDT = 0;
 	double accumulator = 0.0;
 	double physicsTime = 0.012;
+	double mUpdateIntervalInSeconds = kFrameTime;
 
 #pragma region Singleton
 

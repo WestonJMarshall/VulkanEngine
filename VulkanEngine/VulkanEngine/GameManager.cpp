@@ -8,6 +8,8 @@
 #include "OctTree.h"
 #include "KDTree.h"
 #include "QuadTree.h"
+#include "RigidShape.h"
+#include "Rectangle.h"
 
 #define MshMngr MeshManager::GetInstance()
 KD_tree* KDtree;
@@ -94,31 +96,44 @@ void GameManager::Init()
 		//gameObjects[i]->Init();
 	//}
 
+	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
+	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(-1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
+	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(0, -1.5), 0.0f, 0.8f, 0.2f, 8.0f, 0.5f)));
+
+
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
-	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -2.5f, 0)));
-	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(10.0f, 0.5f, 1.0f));
-	gameObjects[gameObjects.size() - 3]->SetPhysicsObject(PhysicsLayers::Static, ColliderTypes::AABB, 10.0f, false);
-	gameObjects[gameObjects.size() - 3]->SetName("Floor");
+	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	gameObjects[gameObjects.size() - 3]->SetName("Cube1");
 
-	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.5f, 0.5f, 0)));
-	gameObjects[gameObjects.size() - 2]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-    gameObjects[gameObjects.size() - 2]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
-	gameObjects[gameObjects.size() - 2]->SetName("DCube1");
+	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 2]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	gameObjects[gameObjects.size() - 2]->SetName("Cube2");
 
-	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.5f, 0.5f, 0)));
-	gameObjects[gameObjects.size() - 1]->GetTransform()->SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-	gameObjects[gameObjects.size() - 1]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
-	gameObjects[gameObjects.size() - 1]->SetName("DCube2");
+	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.5f, 0)));
+	gameObjects[gameObjects.size() - 1]->GetTransform()->SetScale(glm::vec3(8.0f, 0.5f, 0.0f));
+	gameObjects[gameObjects.size() - 1]->SetName("Floor");
 
-	gameObjects[gameObjects.size() - 3]->Init();
-	gameObjects[gameObjects.size() - 2]->Init();
-	gameObjects[gameObjects.size() - 1]->Init();
+	
 	gameObjects[gameObjects.size() - 3]->Spawn();
 	gameObjects[gameObjects.size() - 2]->Spawn();
 	gameObjects[gameObjects.size() - 1]->Spawn();
+
+	/*
+	for (int j = 0; j < rigidShapes.size(); j++)
+	{
+		for (int i = 0; i < rigidShapes[j]->getVertexes().size(); i++)
+		{
+			gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+			gameObjects[i + j * 4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(rigidShapes[j]->getVertexes()[i].x, rigidShapes[j]->getVertexes()[i].y, 0)));
+			gameObjects[i + j * 4]->GetTransform()->SetScale(glm::vec3(0.1f, 0.1f, 0.0f));
+			gameObjects[i + j * 4]->Spawn();
+		}
+	}
+	*/
 
 	//Reset time so that it doesn't include initialization in totalTime
 	Time::Reset();
@@ -130,8 +145,9 @@ void GameManager::Update()
 	{
 		if (gameObjects.size() != 2) {
 			if (gameObjects[i]->GetTransform()->GetPosition().y < -10.0f) {
-				gameObjects[i]->Despawn();
-				gameObjects.erase(gameObjects.begin() + i);
+				//gameObjects[i]->Despawn();
+				//rigidShapes.erase(rigidShapes.begin() + i);
+				//gameObjects.erase(gameObjects.begin() + i);
 			}
 		}
 	}
@@ -160,28 +176,36 @@ void GameManager::Update()
 
 
 		//add a cube to the gameobject vector
+		rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(newX, newY), 1.0f, 0.8f, 0.2f, 0.5f, 0.5f)));
 		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 
 		int lastIndex = gameObjects.size() - 1;
-		//set data, place position at random coords
+		int lastIndexR = rigidShapes.size() - 1;
+	
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(newX, newY, 0)));
 		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 5.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
-		
-		gameObjects[lastIndex]->Init();
+		 /*
+		for (int i = 0; i < rigidShapes[lastIndexR]->getVertexes().size(); i++)
+		{
+			gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+			gameObjects[i + lastIndexR * 4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(rigidShapes[lastIndexR]->getVertexes()[i].x, rigidShapes[lastIndexR]->getVertexes()[i].y, 0)));
+			gameObjects[i + lastIndexR * 4]->GetTransform()->SetScale(glm::vec3(0.1f, 0.1f, 0.0f));
+			gameObjects[i + lastIndexR * 4]->Spawn();
+		}
+		*/
 		gameObjects[lastIndex]->Spawn();
 	}
 
 	if (InputManager::GetInstance()->GetKeyPressed(Controls::LeftClick)) {
 		gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
+		rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(-10.0f, 1.0f), 1.0f, 0.8f, 0.2f, 0.5f, 0.5f)));
 
 		int lastIndex = gameObjects.size() - 1;
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-10.0f, 1.0f, 0)));
-		gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
+		//gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
 		gameObjects[lastIndex]->SetName("Cube");
 
-		gameObjects[lastIndex]->Init();
 		gameObjects[lastIndex]->Spawn();
 
 		float y = InputManager::GetInstance()->GetMousePosition().y;
@@ -193,7 +217,7 @@ void GameManager::Update()
 
 		float yAngle = -(rangeYStartFloat + ((rangeYEndFloat - rangeYStartFloat) / (rangeYEndMouse - rangeYStartMouse)) * (y - rangeYStartMouse));
 
-		gameObjects[lastIndex]->GetPhysicsObject()->ApplyForce(glm::vec3(600.0f, yAngle * 50, 0.0f), false);
+		rigidShapes[lastIndex]->setVelocity(glm::vec2(15.0f, yAngle));
 	}
 	//Move Camera
 	glm::vec3 moveDirection = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -237,9 +261,31 @@ void GameManager::Update()
 	}
 
 	//Update Game Objects
-	for (size_t i = 0; i < gameObjects.size(); i++) {
-		gameObjects[i]->Update();
+	//for (size_t i = 0; i < gameObjects.size(); i++) {
+		//gameObjects[i]->Update();
+	//}
+
+	for (int i = 0; i < rigidShapes.size(); i++)
+	{
+		rigidShapes[i]->update();
+		gameObjects[i]->GetTransform()->SetPosition(glm::vec3(rigidShapes[i]->getCenter().x, rigidShapes[i]->getCenter().y, 0));
+		gameObjects[i]->GetTransform()->SetOrientation(glm::vec3(0, 0, rigidShapes[i]->getRotation()));
+		//std::cout << rigidShapes[i]->getCenter().x << ", " << rigidShapes[i]->getCenter().y << std::endl;
 	}
+	/*
+	for (int j = 0; j < rigidShapes.size(); j++)
+	{
+		for (int i = 0; i < rigidShapes[j]->getVertexes().size(); i++)
+		{
+			gameObjects[i + j * 4]->GetTransform()->SetPosition(glm::vec3(rigidShapes[j]->getVertexes()[i].x, rigidShapes[j]->getVertexes()[i].y, 0));
+		}
+	}
+	*/
+}
+
+void GameManager::UpdateShapes() 
+{
+	
 }
 
 void GameManager::CreateKDTree()

@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "PhysicsManager.h"
 #include "GameObject.h"
+#include "GameManager.h"
 #include "VulkanManager.h"
+#include "CollisionInfo2D.h"
+#include "2DVectorMath.h"
 
 #define COLLISION_STEPS 4
 
@@ -93,7 +96,8 @@ std::shared_ptr<PhysicsObject> PhysicsManager::GetPhysicsObject(int ID)
 void PhysicsManager::Update()
 {
     //Check for collisions
-    DetectCollisions();
+    //DetectCollisions();
+	DetectCollisions2D();
 }
 
 #pragma endregion
@@ -102,55 +106,103 @@ void PhysicsManager::Update()
 
 void PhysicsManager::DetectCollisions()
 {
+	/*
     CollisionData data = {};
 
     //Check Dynamic objects against all objects
-    for (size_t i = 0; i < physicsObjects[PhysicsLayers::Dynamic].size(); i++) {
-        if (physicsObjects[PhysicsLayers::Dynamic][i]->GetAlive()) {
-            for (size_t j = i + 1; j < physicsObjects[PhysicsLayers::Dynamic].size(); j++) {
-                if (physicsObjects[PhysicsLayers::Dynamic][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], COLLISION_STEPS, data)) {
-                        ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], data);
-                        physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
-                        physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject());
-                    }
-                }
-            }
+		for (size_t i = 0; i < physicsObjects[PhysicsLayers::Dynamic].size(); i++) {
+			if (physicsObjects[PhysicsLayers::Dynamic][i]->GetAlive()) {
+				for (size_t j = i + 1; j < physicsObjects[PhysicsLayers::Dynamic].size(); j++) {
+					if (physicsObjects[PhysicsLayers::Dynamic][j]->GetAlive()) {
+						if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], COLLISION_STEPS, data)) {
+							ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Dynamic][j], data);
+							physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
+							physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][j]->GetGameObject());
+						}
+					}
+				}
 
-            for (size_t j = 0; j < physicsObjects[PhysicsLayers::Static].size(); j++) {
-                if (physicsObjects[PhysicsLayers::Static][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], COLLISION_STEPS, data)) {
-                        ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], data);
-                        physicsObjects[PhysicsLayers::Static][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
-                        physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][j]->GetGameObject());
-                    }
-                }
-            }
+				for (size_t j = 0; j < physicsObjects[PhysicsLayers::Static].size(); j++) {
+					if (physicsObjects[PhysicsLayers::Static][j]->GetAlive()) {
+						if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], COLLISION_STEPS, data)) {
+							ResolveCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Static][j], data);
+							physicsObjects[PhysicsLayers::Static][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
+							physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][j]->GetGameObject());
+						}
+					}
+				}
 
-            for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
-                if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
-                        physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
-                        physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
-                    }
-                }
-            }
-        }
-    }
+				for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
+					if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
+						if (CheckCollision(physicsObjects[PhysicsLayers::Dynamic][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
+							physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject());
+							physicsObjects[PhysicsLayers::Dynamic][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
+						}
+					}
+				}
+			}
+		}
 
-    //Check Static objects against triggers
-    for (size_t i = 0; i < physicsObjects[PhysicsLayers::Static].size(); i++) {
-        if (physicsObjects[PhysicsLayers::Static][i]->GetAlive()) {
-            for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
-                if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
-                    if (CheckCollision(physicsObjects[PhysicsLayers::Static][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
-                        physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][i]->GetGameObject());
-                        physicsObjects[PhysicsLayers::Static][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
-                    }
-                }
-            }
-        }
-    }
+		//Check Static objects against triggers
+		for (size_t i = 0; i < physicsObjects[PhysicsLayers::Static].size(); i++) {
+			if (physicsObjects[PhysicsLayers::Static][i]->GetAlive()) {
+				for (size_t j = 0; j < physicsObjects[PhysicsLayers::Trigger].size(); j++) {
+					if (physicsObjects[PhysicsLayers::Trigger][j]->GetAlive()) {
+						if (CheckCollision(physicsObjects[PhysicsLayers::Static][i], physicsObjects[PhysicsLayers::Trigger][j], COLLISION_STEPS, data)) {
+							physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Static][i]->GetGameObject());
+							physicsObjects[PhysicsLayers::Static][i]->GetGameObject()->OnCollision(physicsObjects[PhysicsLayers::Trigger][j]->GetGameObject());
+						}
+					}
+				}
+			}
+		}
+	*/
+}
+
+
+void PhysicsManager::DetectCollisions2D() 
+{
+	//for (int i = 0; i < GameManager::GetInstance()->rigidShapes.size(); i++)
+	//{
+		//std::cout << GameManager::GetInstance()->rigidShapes[i]->getFaceNormals()[i].x << ", " << GameManager::GetInstance()->rigidShapes[i]->getFaceNormals()[i].y << std::endl;
+	//}
+	int relaxationCount = 1;
+	//reset collisionInfo
+	CollisionInfo2D collisionInfo = CollisionInfo2D();
+	for (int k = 0; k < relaxationCount; k++) 
+	{
+		for (int i = 0; i < GameManager::GetInstance()->rigidShapes.size(); i++)
+		{
+			for (int j = i + 1; j < GameManager::GetInstance()->rigidShapes.size(); j++)
+			{
+				//std::cout << GameManager::GetInstance()->rigidShapes[i]->getCenter().x << ", " << GameManager::GetInstance()->rigidShapes[i]->getCenter().y << std::endl;
+				//std::cout << GameManager::GetInstance()->rigidShapes[j]->getCenter().x << ", " << GameManager::GetInstance()->rigidShapes[j]->getCenter().y << std::endl;
+				if (CollisionTest2D(GameManager::GetInstance()->rigidShapes[i], GameManager::GetInstance()->rigidShapes[j], collisionInfo)) 
+				{
+					//std::cout << "HIT!" << " objects: " << i << " and "<< j <<  std::endl;
+					if (vecMath.dot(collisionInfo.getNormal(), vecMath.subtract(GameManager::GetInstance()->rigidShapes[j]->getCenter(), GameManager::GetInstance()->rigidShapes[i]->getCenter())) < 0 )
+					{
+						collisionInfo.changeDir();
+					}
+
+					ResolveVelocity(GameManager::GetInstance()->rigidShapes[i], GameManager::GetInstance()->rigidShapes[j], collisionInfo);
+				}
+			}
+		}
+	}
+}
+
+bool PhysicsManager::CollisionTest2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo)
+{
+	bool status = false;
+	if (rect2->getType() == "Circle") {
+		//do nothing for now
+	}
+	else {
+		status = RectRectCollision2D(rect1, rect2, collisionInfo);
+	}
+	
+	return status;
 }
 
 bool PhysicsManager::CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData& data)
@@ -239,6 +291,90 @@ bool PhysicsManager::CheckCollision(std::shared_ptr<PhysicsObject> physicsObject
         }
     }
     return false;
+}
+
+bool PhysicsManager::RectRectCollision2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo)
+{
+	bool status1 = false;
+	bool status2 = false;
+
+	CollisionInfo2D CollisionInfoR1 = CollisionInfo2D();
+	CollisionInfo2D CollisionInfoR2 = CollisionInfo2D();
+
+	status1 = findAxisLeastPenetration(rect1, rect2, CollisionInfoR1);
+	if (status1) {
+		status2 = findAxisLeastPenetration(rect2, rect1, CollisionInfoR2);
+		if (status2) {
+			if (CollisionInfoR1.getDepth() < CollisionInfoR2.getDepth()) {
+				glm::vec2 depthVec = vecMath.scale(CollisionInfoR1.getNormal(), CollisionInfoR1.getDepth());
+				collisionInfo.setInfo(CollisionInfoR1.getDepth(), CollisionInfoR1.getNormal(), vecMath.subtract(CollisionInfoR1.mStart, depthVec));
+			}
+			else {
+				collisionInfo.setInfo(CollisionInfoR2.getDepth(), vecMath.scale(CollisionInfoR2.getNormal(), -1.0f), CollisionInfoR2.mStart);
+			}
+		}
+	}
+	return status1 && status2;
+}
+
+bool PhysicsManager::findAxisLeastPenetration(std::shared_ptr<RigidShape> thisShape, std::shared_ptr<RigidShape> otherShape, CollisionInfo2D &data) 
+{
+	glm::vec2 n;
+	glm::vec2 supportPoint;
+	float bestDistance = 999999;
+	int bestIndex = 0;
+	bool hasSupport = true;
+	int i = 0;
+	while (hasSupport && (i < thisShape->getFaceNormals().size())) 
+	{
+		n = thisShape->getFaceNormals()[i];
+		glm::vec2 dir = vecMath.scale(n, -1.0f);
+		glm::vec2 ptOnEdge = thisShape->getVertexes()[i];
+
+		findSupportPoint(otherShape, dir, ptOnEdge);
+
+		//if zero vector has no support
+		hasSupport = (tmpSupportPoint != glm::vec2(0, 0));
+		if (hasSupport && tmpDistance < bestDistance)
+		{
+			bestDistance = tmpDistance;
+			bestIndex = i;
+			supportPoint = tmpSupportPoint;
+			
+		}
+		
+		i += 1;
+	}
+	
+	if (hasSupport) 
+	{
+		glm::vec2 bestVec = vecMath.scale(thisShape->getFaceNormals()[bestIndex], bestDistance);
+		//std::cout << "moving by: " << bestVec.x << ", " << bestVec.y << " with a distance of: " << bestDistance << std::endl;
+		data.setInfo(bestDistance, thisShape->getFaceNormals()[bestIndex], vecMath.add(supportPoint, bestVec));
+	}
+	
+	
+	return hasSupport;
+}
+
+void PhysicsManager::findSupportPoint(std::shared_ptr<RigidShape> r1, glm::vec2 dir, glm::vec2 ptOnEdge)
+{
+	glm::vec2 vToEdge;
+	float projection;
+	tmpDistance = -999999;
+	tmpSupportPoint = glm::vec2(0, 0);
+	hasSupportPoint = false;
+	for (int i = 0; i < r1->getVertexes().size(); i++)
+	{
+		vToEdge = vecMath.subtract(r1->getVertexes()[i], ptOnEdge);
+		projection = vecMath.dot(vToEdge, dir);
+	
+		if (projection > 0 && projection > tmpDistance) 
+		{
+			tmpSupportPoint = r1->getVertexes()[i];
+			tmpDistance = projection;
+		}
+	}
 }
 
 bool PhysicsManager::SharesDimension(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2)
@@ -494,70 +630,186 @@ bool PhysicsManager::SAT(std::shared_ptr<Collider> collider1, std::shared_ptr<Co
 
 #pragma region Collision Resolution
 
-void PhysicsManager::ResolveCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData data)
+void PhysicsManager::ResolveCollision(std::shared_ptr<RigidShape> physicsObject1, std::shared_ptr<RigidShape> physicsObject2, CollisionInfo2D &data)
 {
+	float correctnessRate = 0.8;
+	float s1InvMass = physicsObject1->getInvMass();
+	float s2InvMass = physicsObject2->getInvMass();
+
+	float num = data.getDepth() / (s1InvMass + s2InvMass) * correctnessRate;
+	glm::vec2 correctionAmount = vecMath.scale(data.getNormal(), num);
+
+	physicsObject1->move(vecMath.scale(correctionAmount, -s1InvMass));
+	physicsObject2->move(vecMath.scale(correctionAmount, s2InvMass));
+	
+	//float invMass1 =  1 / physicsObject1->GetMass();
+	//float invMass2 =  1 / physicsObject2->GetMass();
+
+	//float num = data.intersectionDistance / (invMass1 + invMass2) * 0.8f;
+	//glm::vec3 correctionAmount = data.collisionNormal * num;
+
+
     //Double Dynamic
-    if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
+    //if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
         //TODO: scale resolution movement based on velocity and mass
-        physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -0.4f);
-        physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * 0.4f);
-    }
-    else { //One Dynamic and One Static
+		//physicsObject1->GetTransform()->Translate(correctionAmount * -invMass1);
+		//physicsObject2->GetTransform()->Translate(correctionAmount * invMass2);
+		
+		//physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -0.4f);
+        //physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * 0.4f);
+    //}
+    //else { //One Dynamic and One Static
         //Figure out which object is static and which is dynamic
-        if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
-            physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -1.0f);
-        }
-        else {
-            physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance);
-        }
-    }
+        //if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
+			//physicsObject1->GetTransform()->Translate(correctionAmount * -invMass1);
+			//physicsObject1->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance * -1.0f);
+       // }
+        //else {
+			//physicsObject2->GetTransform()->Translate(correctionAmount * invMass2);
+			//physicsObject2->GetTransform()->Translate(data.collisionNormal * data.intersectionDistance);
+        //}
+    //}
 
     //Resolve Velocities after positions have been fixed
-    ResolveVelocity(physicsObject1, physicsObject2, data);
+    //ResolveVelocity(physicsObject1, physicsObject2, data);
 
     //TODO: Call both object's on collision methods
 }
 
-void PhysicsManager::ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData data)
+void PhysicsManager::ResolveVelocity(std::shared_ptr<RigidShape> physicsObject1, std::shared_ptr<RigidShape> physicsObject2, CollisionInfo2D &data)
 {
-    float projectionMult[2];
-    projectionMult[0] = glm::dot(physicsObject1->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
-    projectionMult[1] = glm::dot(physicsObject2->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
+	if (physicsObject1->getInvMass() == 0 && physicsObject2->getInvMass() == 0) 
+	{
+		return;
+	}
 
-    glm::vec3 force[2];
+	//POSITIONAL CORRECTION FLAG
+	if (true) 
+	{
+		ResolveCollision(physicsObject1, physicsObject2, data);
+	}
 
-	float scaledMass1 = physicsObject1->GetMass() / 10;
-	float scaledMass2 = physicsObject2->GetMass() / 10;
+	float invMass1 = physicsObject1->getInvMass();
+	float invMass2 = physicsObject2->getInvMass();
+	glm::vec2 center1 = physicsObject1->getCenter();
+	glm::vec2 center2 = physicsObject2->getCenter();
+	glm::vec2 velocity1 = physicsObject1->getVelocity();
+	glm::vec2 velocity2 = physicsObject2->getVelocity();
+	float angularVelocity1 = physicsObject1->getAngularVelocity();
+	float angularVelocity2 = physicsObject2->getAngularVelocity();
+	float restitution1 = physicsObject1->getRestitution();
+	float restitution2 = physicsObject2->getRestitution();
+	float friction1 = physicsObject1->getFriction();
+	float friction2 = physicsObject2->getFriction();
+	float inertia1 = physicsObject1->getInertia();
+	float inertia2 = physicsObject2->getInertia();
 
-    
-    if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
+
+	glm::vec2 n = data.getNormal(); //
+
+	glm::vec2 start = vecMath.scale(data.mStart, (invMass2 / (invMass1 + invMass2)));
+	glm::vec2 end = vecMath.scale(data.mStart, (invMass1 / (invMass1 + invMass2)));
+
+	glm::vec2 p = vecMath.add(start, end);
+
+	glm::vec2 r1 = vecMath.subtract(p, center1);
+	glm::vec2 r2 = vecMath.subtract(p, center2);
+
+	glm::vec2 v1 = vecMath.add(velocity1, glm::vec2(-1 * angularVelocity1 * r1.y, angularVelocity1 * r1.x));
+	glm::vec2 v2 = vecMath.add(velocity2, glm::vec2(-1 * angularVelocity2 * r2.y, angularVelocity2 * r2.x));
+
+	glm::vec2 relativeVelocity = vecMath.subtract(v2, v1);
+
+	float rVelocityInNormal = vecMath.dot(relativeVelocity, n);
+
+	if (rVelocityInNormal > 0) 
+	{
+		return;
+	}
+
+	float newRestitution = glm::min(restitution1, restitution2);
+	float newFriction = glm::min(friction1, friction2);
+
+	float R1crossN = vecMath.cross(r1, n);
+	float R2crossN = vecMath.cross(r2, n);
+
+	float jN = -(1 + newRestitution) * rVelocityInNormal;
+	jN = jN / (invMass1 + invMass2 + R1crossN * R1crossN * inertia1 + R2crossN * R2crossN * inertia2);
+
+	physicsObject1->setAngularVelocity(angularVelocity1 - (R1crossN * jN * inertia1));
+	physicsObject2->setAngularVelocity(angularVelocity2 + (R2crossN * jN * inertia2));
+	angularVelocity1 = physicsObject1->getAngularVelocity();
+	angularVelocity2 = physicsObject2->getAngularVelocity();
+
+
+	glm::vec2 impulse = vecMath.scale(n, jN);
+
+	physicsObject1->setVelocity(vecMath.subtract(velocity1, vecMath.scale(impulse, invMass1)));
+	physicsObject2->setVelocity(vecMath.add(velocity2, vecMath.scale(impulse, invMass2)));
+	velocity1 = physicsObject1->getVelocity();
+	velocity2 = physicsObject2->getVelocity();
+
+	glm::vec2 tangent = vecMath.subtract(relativeVelocity, vecMath.scale(n, vecMath.dot(relativeVelocity, n)));
+
+	tangent = vecMath.scale(vecMath.normalize(tangent), -1);
+
+	float R1crossT = vecMath.cross(r1, tangent);
+	float R2crossT = vecMath.cross(r2, tangent);
+
+	float jT = -(1 + newRestitution) * vecMath.dot(relativeVelocity, tangent) * newFriction;
+	jT = jT / (invMass1 + invMass2 + R1crossT * R1crossT * inertia1 + R2crossT * R2crossT * inertia2);
+
+	if (jT > jN) {
+		jT = jN;
+	}
+
+	impulse = vecMath.scale(tangent, jT);
+
+	physicsObject1->setVelocity(vecMath.subtract(velocity1, vecMath.scale(impulse, invMass1)));
+	physicsObject2->setVelocity(vecMath.add(velocity2, vecMath.scale(impulse, invMass2)));
+
+	physicsObject1->setAngularVelocity(angularVelocity1 - R1crossT * jT * inertia1);
+	physicsObject2->setAngularVelocity(angularVelocity2 + R2crossT * jT * inertia2);
+
+
+	//float projectionMult[2];
+	//projectionMult[0] = glm::dot(physicsObject1->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
+	//projectionMult[1] = glm::dot(physicsObject2->GetVelocityAtPoint(data.contactPoint), data.collisionNormal) / glm::dot(data.collisionNormal, data.collisionNormal);
+
+	//glm::vec3 force[2];
+
+	//float scaledMass1 = physicsObject1->GetMass() / 10;
+	//float scaledMass2 = physicsObject2->GetMass() / 10;
+
+	//glm::vec3 test2 = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->dt);
+	//std::cout << "force of old: " << test2.x << ", " << test2.y << std::endl;
+	//if (physicsObject1->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[0] > 0) {
 		//dont apply drag if object is on top
-		force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->dt);
-        physicsObject1->ApplyForce(force[0], data.contactPoint, false);
+		//force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass2) / (float)(VulkanManager::GetInstance()->dt);
+	   // physicsObject1->ApplyForce(force[0], data.contactPoint, false);
 
-        if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
-			force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
-            physicsObject2->ApplyForce(-force[0], data.contactPoint, false);
-        }
-    }
+		//if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic) {
+			//force[0] = (data.collisionNormal * projectionMult[0] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
+			//physicsObject2->ApplyForce(-force[0], data.contactPoint, false);
+	   // }
+   // }
 
-    if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
+   // if (physicsObject2->GetPhysicsLayer() == PhysicsLayers::Dynamic && projectionMult[1] < 0) {
 		//if obj1 is moving, and obj2 is not, apply a "drag" to obj2
-		force[1] = (data.collisionNormal * projectionMult[1] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
+		//force[1] = (data.collisionNormal * projectionMult[1] * -scaledMass1) / (float)(VulkanManager::GetInstance()->dt);
 		//if obj1 is moving and obj2 is not, apply a "drag" force to obj2
-		if (physicsObject1->GetVelocity().x != 0 && physicsObject2->GetVelocity().x == 0.0f) {
-			force[1].x = physicsObject1->GetVelocity().x * 50.0f;
-		}
+		//if (physicsObject1->GetVelocity().x != 0 && physicsObject2->GetVelocity().x == 0.0f) {
+			//force[1].x = physicsObject1->GetVelocity().x * 50.0f;
+		//}
 
-		physicsObject2->ApplyForce(force[1], data.contactPoint, false);
+		//physicsObject2->ApplyForce(force[1], data.contactPoint, false);
 		//physicsObject1->ApplyForce(-force[1], data.contactPoint, false);
 		//apply force to obj1 if it is moving only
-		if (physicsObject2->GetVelocity().x > 0) {
-			physicsObject1->ApplyForce(-force[1], data.contactPoint, false);
-		}
-		
-		
-    }
+		//if (physicsObject2->GetVelocity().x > 0) {
+			//physicsObject1->ApplyForce(-force[1], data.contactPoint, false);
+		//}
+
+	//}
 }
 
 #pragma endregion

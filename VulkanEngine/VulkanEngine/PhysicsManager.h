@@ -7,18 +7,31 @@
 #include "SphereCollider.h"
 #include "AABBCollider.h"
 #include "ARBBCollider.h"
+#include "RigidShape.h"
+#include "CollisionInfo2D.h"
+#include "2DVectorMath.h"
+
+
 
 class PhysicsManager
 {
 private:
 	static PhysicsManager* instance;
+	
+	
 
-	float gravity = 0.08f;
+	float gravity = 0.02f;
 	glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+	bool hasSupportPoint = false;
 
 	std::vector<std::vector<std::shared_ptr<PhysicsObject>>> physicsObjects;
 
 public:
+	glm::vec2 tmpSupportPoint = glm::vec2(0, 0);
+	float tmpDistance = -999999;
+	VectorMath2D vecMath;
+
+	std::vector<RigidShape*> physicsObjects2D;
 
 #pragma region Singleton
 
@@ -96,6 +109,8 @@ public:
 	/// </summary>
 	void DetectCollisions();
 
+	void DetectCollisions2D();
+
 	bool SharesDimension(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2);
 	bool CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData& data);
 	bool CheckCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, int numSteps, CollisionData& data);
@@ -127,6 +142,13 @@ public:
 	/// <returns>True if the two objects are in collision</returns>
 	bool SAT(std::shared_ptr<Collider> collider1, std::shared_ptr<Collider> collider2, CollisionData& data);
 
+	bool CollisionTest2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo);
+
+	bool RectRectCollision2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo);
+
+	bool findAxisLeastPenetration(std::shared_ptr<RigidShape> r1, std::shared_ptr<RigidShape> r2, CollisionInfo2D &data);
+
+	void findSupportPoint(std::shared_ptr<RigidShape> r1, glm::vec2 dir, glm::vec2 ptOnEdge);
 #pragma endregion
 
 #pragma region Collision Resolution
@@ -137,14 +159,14 @@ public:
 	/// <param name="physicsObject1">The first object in the collision</param>
 	/// <param name="physicsObject2">The second object in the collision</param>
 	/// <param name="data">The collision data used to resolve the collision</param>
-	void ResolveCollision(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData data);
+	void ResolveCollision(std::shared_ptr<RigidShape> physicsObject1, std::shared_ptr<RigidShape> physicsObject2, CollisionInfo2D &data);
 
 	/// <summary>
 	/// Alters the velocity of two physics objects when they collide
 	/// </summary>
 	/// <param name="physicsObject1">The first object in the collision</param>
 	/// <param name="physicsObject2">The second object in the collision</param>
-	void ResolveVelocity(std::shared_ptr<PhysicsObject> physicsObject1, std::shared_ptr<PhysicsObject> physicsObject2, CollisionData data);
+	void ResolveVelocity(std::shared_ptr<RigidShape> physicsObject1, std::shared_ptr<RigidShape> physicsObject2, CollisionInfo2D &data);
 
 #pragma endregion
 

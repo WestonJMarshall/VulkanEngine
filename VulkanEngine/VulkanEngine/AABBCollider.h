@@ -6,10 +6,12 @@ class AABBCollider : public Collider
 {
 private:
 	glm::vec3 extents;
+	std::vector<glm::vec3> faceNormals;
 
 public:
 
 #pragma region Constructor
+	
 
 	AABBCollider(glm::vec3 extents = glm::vec3(0, 0, 0));
 
@@ -22,6 +24,8 @@ public:
 	/// </summary>
 	/// <returns>The collider's extents</returns>
 	glm::vec3 GetExtents();
+
+	std::vector<glm::vec3> getNormals();
 
 	/// <summary>
 	/// Sets the extents to the specified value

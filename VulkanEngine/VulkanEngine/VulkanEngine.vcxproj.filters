@@ -41,6 +41,11 @@
     <ClCompile Include="VulkanEngine.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="PhysicsManager2D.cpp" />
+    <ClCompile Include="2DCollider.cpp" />
+    <ClCompile Include="RigidShape.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="CollisionInfo2D.cpp" />
+    <ClCompile Include="Circle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBCollider.h" />
@@ -95,6 +100,12 @@
     <ClInclude Include="VulkanManager.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="PhysicsManager2D.h" />
+    <ClInclude Include="2DCollider.h" />
+    <ClInclude Include="RigidShape.h" />
+    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="CollisionInfo2D.h" />
+    <ClInclude Include="2DVectorMath.h" />
+    <ClInclude Include="Circle.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="compile.bat" />

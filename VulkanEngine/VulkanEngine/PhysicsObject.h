@@ -17,6 +17,8 @@ private:
 	glm::vec3 acceleration;
 	AngleAxis angularVelocity;
 	AngleAxis angularAcceleration;
+	float fAngularVelocity = 0.0f;
+	
 
 	bool alive;
 	PhysicsLayers physicsLayer;
@@ -50,6 +52,10 @@ public:
 	/// </summary>
 	/// <returns>The object's mass</returns>
 	float GetMass();
+
+	float getAngularVelocityF();
+
+	void setAngluarVelocityF(float aV);
 
 	/// <summary>
 	/// Sets the mass of the object to the specified value

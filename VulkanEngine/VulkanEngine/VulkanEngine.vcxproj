@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2DCollider.cpp" />
     <ClCompile Include="AABBCollider.cpp" />
     <ClCompile Include="ARBBCollider.cpp" />
     <ClCompile Include="..\include\imgui\imgui.cpp">
@@ -182,7 +183,9 @@
     <ClCompile Include="BinaryPartitionTree.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="CollisionInfo2D.cpp" />
     <ClCompile Include="CommandBuffer.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DebugManager.cpp" />
@@ -206,6 +209,8 @@
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="PhysicsManager2D.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="RigidShape.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TextureImages.cpp" />
@@ -216,15 +221,19 @@
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2DCollider.h" />
+    <ClInclude Include="2DVectorMath.h" />
     <ClInclude Include="AABBCollider.h" />
     <ClInclude Include="AngleAxis.h" />
     <ClInclude Include="ARBBCollider.h" />
     <ClInclude Include="BinaryPartitionTree.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderTypes.h" />
     <ClInclude Include="CollisionData.h" />
+    <ClInclude Include="CollisionInfo2D.h" />
     <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Controls.h" />
@@ -257,6 +266,8 @@
     <ClInclude Include="ProjectionData.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="RigidShape.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainSupportDetails.h" />

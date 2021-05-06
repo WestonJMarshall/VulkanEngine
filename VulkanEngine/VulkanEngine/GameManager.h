@@ -3,15 +3,18 @@
 
 #include "GameObject.h"
 #include "Octant.h";
+#include "RigidShape.h"
+#include "Rectangle.h"
 
 class GameManager
 {
 private:
 	static GameManager* instance;
 	int entitycount = 25;
-	std::vector<std::shared_ptr<GameObject>> gameObjects;
+	
 	std::vector<std::shared_ptr<GameObject>> octObjects;
 	std::vector<std::shared_ptr<Light>> lights;
+	
 
 	std::shared_ptr<Octant> octree = nullptr;
 	// Octant* octree = nullptr;
@@ -23,6 +26,8 @@ public:
 	int maxCount = 5;
 	float Range = 2.0f;
 	bool activeOctTree = false;
+	std::vector<std::shared_ptr<RigidShape>> rigidShapes;
+	std::vector<std::shared_ptr<GameObject>> gameObjects;
 	static GameManager* GetInstance();
 
 #pragma endregion
@@ -51,6 +56,8 @@ public:
 	/// Called once per frame, updates the gameobjects
 	/// </summary>
 	void Update();
+
+	void UpdateShapes();
 
 	void CreateKDTree();
 	void CreateQuadTree();

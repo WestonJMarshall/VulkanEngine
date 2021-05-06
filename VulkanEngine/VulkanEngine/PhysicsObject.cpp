@@ -78,6 +78,16 @@ float PhysicsObject::GetMass()
 	return mass;
 }
 
+float PhysicsObject::getAngularVelocityF() 
+{
+	return fAngularVelocity;
+}
+
+void PhysicsObject::setAngluarVelocityF(float aV) 
+{
+	fAngularVelocity = aV;
+}
+
 void PhysicsObject::SetMass(float value)
 {
 	mass = value;

@@ -22,6 +22,11 @@ glm::vec3 AABBCollider::GetExtents()
     return extents;
 }
 
+std::vector<glm::vec3> AABBCollider::getNormals() 
+{
+	return faceNormals;
+}
+
 void AABBCollider::SetExtents(glm::vec3 value)
 {
     extents = value;
@@ -35,6 +40,7 @@ void AABBCollider::GenerateFromMesh(std::shared_ptr<Mesh> mesh)
 {
     //Find the center of the mesh
     std::vector<Vertex> vertices = mesh->GetVertices();
+	//std::vector<glm::vec3> faceNormals;
     glm::vec3 position = GetParentTransform()->GetOrientation() * vertices[0].position * GetParentTransform()->GetScale();
     glm::vec3 max = position;
     glm::vec3 min = position;
@@ -67,6 +73,16 @@ void AABBCollider::GenerateFromMesh(std::shared_ptr<Mesh> mesh)
     glm::vec3 center = glm::vec3(min.x + max.x, min.y + max.y, min.z + max.z) * 0.5f;
     extents = max - center;
 
+	
+	vertices[0].position =  vertices[1].position - vertices[2].position;
+	faceNormals.push_back(glm::normalize(vertices[0].position));
+	vertices[1].position = vertices[2].position - vertices[3].position;
+	faceNormals.push_back(glm::normalize(vertices[1].position));
+	vertices[2].position = vertices[3].position - vertices[0].position;
+	faceNormals.push_back(glm::normalize(vertices[2].position));
+	vertices[3].position = vertices[0].position - vertices[1].position;
+	faceNormals.push_back(glm::normalize(vertices[3].position));
+	
     //Set scale to match the extents of the collider
     transform->SetScale(2.0f * extents);
     SetOffset(center);

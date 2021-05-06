@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "GuiManager.h"
 
+
 #define mainCamera Camera::GetMainCamera()
 #define shouldInitGui true
 
@@ -135,7 +136,7 @@ void VulkanManager::Run()
 	}
 
 	//Setup Camera
-	mainCamera->SetPerspective(true);
+	mainCamera->SetPerspective(false);
 	mainCamera->GetTransform()->SetPosition(glm::vec3(0.0f, 0.0f, 8.0f));
 	mainCamera->GetTransform()->LookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -382,7 +383,7 @@ void VulkanManager::MainLoop()
 	while (!glfwWindowShouldClose(WindowManager::GetInstance()->GetWindow())) {
 		glfwPollEvents();
 
-		Update();
+		checkPhysicsTimeStep();
 		Draw();
 		//Exit the application when the exit key is pressed
 		if (InputManager::GetInstance()->GetKeyPressed(Controls::Exit)) {
@@ -412,15 +413,14 @@ void VulkanManager::Draw()
 
 void VulkanManager::Update()
 {
+	
 	Time::Update();
 
 	InputManager::GetInstance()->Update();
 
 	GameManager::GetInstance()->Update();
 
-	checkPhysicsTimeStep();
-
-	//PhysicsManager::GetInstance()->Update();
+	PhysicsManager::GetInstance()->Update();
 
 	DebugManager::GetInstance()->Update();
 
@@ -429,37 +429,18 @@ void VulkanManager::Update()
 
 void VulkanManager::checkPhysicsTimeStep() 
 {
-	//get current time and time since last update
-	time = glfwGetTime();
-	dt = time - timeBase;
-
-	//if more time has passed than the timeStep of .012
-	if (dt > physicsTime) {
-		//calculate fps
-		if (time - FPStime > 1.0) {
-			fps = frame / (time - FPStime);
-			FPStime = time;
-			frame = 0; //reset frame count
-		}
-		timeBase = time;
-
-		//give deltatime a max of .25 for program to respond
-		if (dt > 0.25) {
-			dt = 0.25;
-		}
-		//std::cout << "dt: " << Time::GetDeltaTime() << std::endl;
-		accumulator += dt;
-
-		while (accumulator >= physicsTime)
-		{
-			oldCallTime = callTime;
-			callTime = glfwGetTime();
-			callDT = callTime - oldCallTime;
-			PhysicsManager::GetInstance()->Update();
-			accumulator -= physicsTime;
-		}
+	currentTime = glfwGetTime() * 1000;
+	elapsedTime = currentTime - previousTime;
+	previousTime = currentTime;
+	lagTime += elapsedTime;
+	
+	while (lagTime >= kMPF) 
+	{
+		lagTime -= kMPF;
+		Update();
 	}
-
+		
+	
 }
 
 #pragma endregion
