@@ -46,6 +46,8 @@ public:
 
 	float getInertia() override;
 
+	float getRadius() override;
+
 	float getRotation() override;
 
 	void setAngularVelocity(float aV) override;

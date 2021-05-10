@@ -179,7 +179,7 @@ void PhysicsManager::DetectCollisions2D()
 				//std::cout << GameManager::GetInstance()->rigidShapes[j]->getCenter().x << ", " << GameManager::GetInstance()->rigidShapes[j]->getCenter().y << std::endl;
 				if (CollisionTest2D(GameManager::GetInstance()->rigidShapes[i], GameManager::GetInstance()->rigidShapes[j], collisionInfo)) 
 				{
-					//std::cout << "HIT!" << " objects: " << i << " and "<< j <<  std::endl;
+					std::cout << "HIT!" << " objects: " << i << " and "<< j <<  std::endl;
 					if (vecMath.dot(collisionInfo.getNormal(), vecMath.subtract(GameManager::GetInstance()->rigidShapes[j]->getCenter(), GameManager::GetInstance()->rigidShapes[i]->getCenter())) < 0 )
 					{
 						collisionInfo.changeDir();
@@ -192,14 +192,26 @@ void PhysicsManager::DetectCollisions2D()
 	}
 }
 
-bool PhysicsManager::CollisionTest2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo)
+bool PhysicsManager::CollisionTest2D(std::shared_ptr<RigidShape> obj1, std::shared_ptr<RigidShape> obj2, CollisionInfo2D &collisionInfo)
 {
 	bool status = false;
-	if (rect2->getType() == "Circle") {
-		//do nothing for now
+	//if rectangle
+	if (obj1->getType() == "Rectangle") {
+		if (obj2->getType() == "Rectangle") {
+			status = RectRectCollision2D(obj1, obj2, collisionInfo);
+		}
+		else {
+			status = RectCircCollision2D(obj2, obj1, collisionInfo);
+		}
 	}
+	//if circle
 	else {
-		status = RectRectCollision2D(rect1, rect2, collisionInfo);
+		if (obj2->getType() == "Circle") {
+			status = CircCircCollision2D(obj1, obj2, collisionInfo);
+		}
+		else {
+			status = RectCircCollision2D(obj1, obj2, collisionInfo);
+		}
 	}
 	
 	return status;
@@ -315,6 +327,121 @@ bool PhysicsManager::RectRectCollision2D(std::shared_ptr<RigidShape> rect1, std:
 		}
 	}
 	return status1 && status2;
+}
+
+bool PhysicsManager::CircCircCollision2D(std::shared_ptr<RigidShape> circ1, std::shared_ptr<RigidShape> circ2, CollisionInfo2D& collisionInfo) 
+{
+	glm::vec2 vFrom1to2 = vecMath.subtract(circ2->getCenter(), circ1->getCenter());
+	float rSum = circ1->getRadius() + circ2->getRadius();
+	float dist = vecMath.length(vFrom1to2);
+	if (dist > glm::sqrt(rSum * rSum)) 
+	{
+		return false; //not overlapping
+	}
+	if (dist != 0) //overlapping but not same position
+	{
+		glm::vec2 normalFrom2to1 = vecMath.normalize(vecMath.scale(vFrom1to2, -1));
+		glm::vec2 radiusC2 = vecMath.scale(normalFrom2to1, circ2->getRadius());
+		collisionInfo.setInfo(rSum - dist, vecMath.normalize(vFrom1to2), vecMath.add(circ2->getCenter(), radiusC2));
+		return true;
+	}
+	else { //same position
+		if (circ1->getRadius() > circ2->getRadius()) {
+			collisionInfo.setInfo(rSum, glm::vec2(0, -1), vecMath.add(circ1->getCenter(), glm::vec2(0, circ1->getRadius())));
+		}
+		else {
+			collisionInfo.setInfo(rSum, glm::vec2(0, -1), vecMath.add(circ2->getCenter(), glm::vec2(0, circ2->getRadius())));
+		}
+		
+		return true;
+	}
+}
+
+bool PhysicsManager::RectCircCollision2D(std::shared_ptr<RigidShape> circ, std::shared_ptr<RigidShape> rect, CollisionInfo2D& collisionInfo) 
+{
+	float bestDistance = -999999;
+	int nearestEdge;
+	bool inside = true;
+	glm::vec2 circ2Pos;
+	glm::vec2 v;
+	float projection;
+	//step a compute nearest edge
+	for (int i = 0; i < 4; i++)
+	{
+		//find nearest face of center of circle
+		circ2Pos = circ->getCenter();
+		v = vecMath.subtract(circ2Pos, rect->getVertexes()[i]);
+		projection = vecMath.dot(v, rect->getFaceNormals()[i]);
+		if (projection > 0) {
+			//if center of circle is outside of rectangle
+			bestDistance = projection;
+			nearestEdge = i;
+			inside = false;
+			break;
+		}
+		if (projection > bestDistance) {
+			bestDistance = projection;
+			nearestEdge = i;
+		}
+	}
+	if (!inside) {
+	    // Step B1: If center is in region R1
+	    //v1 is from left vertex of face to center of circle
+	    //v2 is from left vertex of face to right vertex of face
+		glm::vec2 v1 = vecMath.subtract(circ2Pos, rect->getVertexes()[nearestEdge]);
+		float index = (nearestEdge + 1) % 4;
+		glm::vec2 v2 = vecMath.subtract(rect->getVertexes()[index], rect->getVertexes()[nearestEdge]);
+		float dot = vecMath.dot(v1, v2);
+		if (dot < 0) {
+			//the center of the circle is in corner region of mVertex[nearestEdge]
+			float dis = vecMath.length(v1);
+			//compare the distance with radium to decide collision
+			if (dis > circ->getRadius()) {
+				return false;
+			}
+			glm::vec2 normal = vecMath.normalize(v1);
+			glm::vec2 radiusVec = vecMath.scale(normal, -circ->getRadius());
+			collisionInfo.setInfo(circ->getRadius() - dis, normal, vecMath.add(circ2Pos, radiusVec));
+		}
+		else{
+			//not in region r1
+			// Step B2: If center is in Region R2
+			//the center of circle is in corner region of mVertex[nearestEdge+1]
+			//v1 is from right vertex of face to center of circle
+			//v2 is from right vertex of face to left vertex of face
+			v1 = vecMath.subtract(circ2Pos, rect->getVertexes()[(nearestEdge + 1) % 4]);
+			v2 = vecMath.scale(v2, -1);
+			float dot = vecMath.dot(v1, v2);
+			if (dot < 0) {
+				float dis = vecMath.length(v1);
+				//compare the distance with radium to decide collision
+				if (dis > circ->getRadius()) {
+					return false;
+				}
+				glm::vec2 normal = vecMath.normalize(v1);
+				glm::vec2 radiusVec = vecMath.scale(normal, -circ->getRadius());
+				collisionInfo.setInfo(circ->getRadius() - dis, normal, vecMath.add(circ2Pos, radiusVec));
+			}
+			else {
+				// Step B3: If center is in Region R3
+				//the center of circle is in face region of face[nearestEdge]
+				if (bestDistance < circ->getRadius()) {
+					glm::vec2 radiusVec = vecMath.scale(rect->getFaceNormals()[nearestEdge], circ->getRadius());
+					collisionInfo.setInfo(circ->getRadius() - bestDistance, rect->getFaceNormals()[nearestEdge], vecMath.subtract(circ2Pos, radiusVec));
+				}
+				else {
+					return false;
+				}
+			}
+		}
+	}
+	else {
+		// Step C: if center is inside
+		//the center of circle is inside of rectangle
+		glm::vec2 radiusVec = vecMath.scale(rect->getFaceNormals()[nearestEdge], circ->getRadius());
+		collisionInfo.setInfo(circ->getRadius() - bestDistance, rect->getFaceNormals()[nearestEdge], vecMath.subtract(circ2Pos, radiusVec));
+	}
+	return true;
 }
 
 bool PhysicsManager::findAxisLeastPenetration(std::shared_ptr<RigidShape> thisShape, std::shared_ptr<RigidShape> otherShape, CollisionInfo2D &data) 

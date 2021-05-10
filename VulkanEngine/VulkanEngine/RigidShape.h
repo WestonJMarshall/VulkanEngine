@@ -44,6 +44,8 @@ public:
 
 	virtual float getInertia();
 
+	virtual float getRadius();
+
 	virtual std::vector<glm::vec2> getFaceNormals();
 
 	virtual std::vector<glm::vec2> getVertexes();

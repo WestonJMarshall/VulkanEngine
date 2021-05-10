@@ -142,9 +142,13 @@ public:
 	/// <returns>True if the two objects are in collision</returns>
 	bool SAT(std::shared_ptr<Collider> collider1, std::shared_ptr<Collider> collider2, CollisionData& data);
 
-	bool CollisionTest2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo);
+	bool CollisionTest2D(std::shared_ptr<RigidShape> obj1, std::shared_ptr<RigidShape> obj2, CollisionInfo2D &collisionInfo);
 
 	bool RectRectCollision2D(std::shared_ptr<RigidShape> rect1, std::shared_ptr<RigidShape> rect2, CollisionInfo2D &collisionInfo);
+
+	bool CircCircCollision2D(std::shared_ptr<RigidShape> circ1, std::shared_ptr<RigidShape> circ2, CollisionInfo2D& collisionInfo);
+
+	bool RectCircCollision2D(std::shared_ptr<RigidShape> circ, std::shared_ptr<RigidShape> rect, CollisionInfo2D& collisionInfo);
 
 	bool findAxisLeastPenetration(std::shared_ptr<RigidShape> r1, std::shared_ptr<RigidShape> r2, CollisionInfo2D &data);
 

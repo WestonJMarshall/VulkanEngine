@@ -12,6 +12,11 @@ void Circle::move(glm::vec2 moveVec)
 	mCenter = vecMath.add(mCenter, moveVec);
 }
 
+std::string Circle::getType()
+{
+	return mType;
+}
+
 void Circle::rotate(float angle)
 {
 	mAngle += angle;
@@ -69,6 +74,11 @@ float Circle::getFriction()
 float Circle::getInertia()
 {
 	return mInertia;
+}
+
+float Circle::getRadius() 
+{
+	return mRadius;
 }
 
 float Circle::getRotation()

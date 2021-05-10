@@ -87,6 +87,11 @@ float RigidShape::getInertia() {
 	return mInertia;
 }
 
+float RigidShape::getRadius() {
+	std::cout << "I aint getting radius!!" << std::endl;
+	return 0.0f;
+}
+
 std::vector<glm::vec2> RigidShape::getFaceNormals() {
 	std::cout << "I aint getting normals!!" << std::endl;
 	std::vector<glm::vec2> empty;

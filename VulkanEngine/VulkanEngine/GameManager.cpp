@@ -10,6 +10,7 @@
 #include "QuadTree.h"
 #include "RigidShape.h"
 #include "Rectangle.h"
+#include "Circle.h"
 
 #define MshMngr MeshManager::GetInstance()
 KD_tree* KDtree;
@@ -99,25 +100,33 @@ void GameManager::Init()
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(-1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(0, -1.5), 0.0f, 0.8f, 0.2f, 8.0f, 0.5f)));
+	rigidShapes.push_back(std::make_shared<Circle>(Circle(glm::vec2(0.0f, 2.0f), 1.0f, 0.8f, 0.2f, 1.0f)));
 
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
-
-	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.0f, 2.0f, 0)));
-	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	gameObjects[gameObjects.size() - 3]->SetName("Cube1");
-
-	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.0f, 2.0f, 0)));
-	gameObjects[gameObjects.size() - 2]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	gameObjects[gameObjects.size() - 2]->SetName("Cube2");
-
-	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.5f, 0)));
-	gameObjects[gameObjects.size() - 1]->GetTransform()->SetScale(glm::vec3(8.0f, 0.5f, 0.0f));
-	gameObjects[gameObjects.size() - 1]->SetName("Floor");
+	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Sphere]));
 
 	
+
+	gameObjects[gameObjects.size() - 4]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(1.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 4]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	gameObjects[gameObjects.size() - 4]->SetName("Cube1");
+
+	gameObjects[gameObjects.size() - 3]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-1.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 3]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	gameObjects[gameObjects.size() - 3]->SetName("Cube2");
+
+	gameObjects[gameObjects.size() - 2]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, -1.5f, 0)));
+	gameObjects[gameObjects.size() - 2]->GetTransform()->SetScale(glm::vec3(8.0f, 0.5f, 0.0f));
+	gameObjects[gameObjects.size() - 2]->SetName("Floor");
+
+	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 2.0f, 0)));
+	gameObjects[gameObjects.size() - 1]->GetTransform()->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
+	gameObjects[gameObjects.size() - 1]->SetName("Sphere1");
+
+	gameObjects[gameObjects.size() - 4]->Spawn();
 	gameObjects[gameObjects.size() - 3]->Spawn();
 	gameObjects[gameObjects.size() - 2]->Spawn();
 	gameObjects[gameObjects.size() - 1]->Spawn();
