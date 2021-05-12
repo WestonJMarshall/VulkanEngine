@@ -58,40 +58,6 @@ void Rectangle::update()
 	rotate(mAngularVelocity * dt);
 }
 
-glm::vec2 Rectangle::getCenter() {
-	return mCenter;
-}
-
-//float Rectangle::getInvMass() 
-//{
-	//return mInvMass;
-//}
-
-glm::vec2 Rectangle::getVelocity() 
-{
-	return mVelocity;
-}
-
-float Rectangle::getAngularVelocity()
-{
-	return mAngularVelocity;
-}
-
-float Rectangle::getRestitution() 
-{
-	return mRestitution;
-}
-
-float Rectangle::getFriction() 
-{
-	return mFriction;
-}
-
-float Rectangle::getInertia()
-{
-	return mInertia;
-}
-
 std::vector<glm::vec2> Rectangle::getFaceNormals() 
 {
 	return mFaceNormal;

@@ -100,7 +100,7 @@ void GameManager::Init()
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(-1.0, 2.0), 1.0f, 0.8f, 0.2f, 1.0f, 1.0f)));
 	rigidShapes.push_back(std::make_shared<Rectangle>(Rectangle(glm::vec2(0, -1.5), 0.0f, 0.8f, 0.2f, 8.0f, 0.5f)));
-	rigidShapes.push_back(std::make_shared<Circle>(Circle(glm::vec2(0.0f, 2.0f), 1.0f, 0.8f, 0.2f, 1.0f)));
+	rigidShapes.push_back(std::make_shared<Circle>(Circle(glm::vec2(0.0f, 2.0f), 1.0f, 0.8f, 0.2f, 0.5f)));
 
 
 	gameObjects.push_back(std::make_shared<GameObject>(EntityManager::GetInstance()->GetMeshes()[MeshTypes::Cube]));
@@ -123,7 +123,7 @@ void GameManager::Init()
 	gameObjects[gameObjects.size() - 2]->SetName("Floor");
 
 	gameObjects[gameObjects.size() - 1]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(0.0f, 2.0f, 0)));
-	gameObjects[gameObjects.size() - 1]->GetTransform()->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
+	gameObjects[gameObjects.size() - 1]->GetTransform()->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	gameObjects[gameObjects.size() - 1]->SetName("Sphere1");
 
 	gameObjects[gameObjects.size() - 4]->Spawn();
@@ -212,7 +212,7 @@ void GameManager::Update()
 
 		int lastIndex = gameObjects.size() - 1;
 		gameObjects[lastIndex]->AddComponent<Transform>(std::make_shared<Transform>(glm::vec3(-10.0f, 1.0f, 0)));
-		//gameObjects[lastIndex]->SetPhysicsObject(PhysicsLayers::Dynamic, ColliderTypes::AABB, 10.0f, true);
+		gameObjects[lastIndex]->GetTransform()->SetScale(glm::vec3(0.5f, 0.5f, 0.0f));
 		gameObjects[lastIndex]->SetName("Cube");
 
 		gameObjects[lastIndex]->Spawn();

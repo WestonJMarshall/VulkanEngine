@@ -55,6 +55,4 @@ public:
 	virtual void setAngularVelocity(float aV);
 
 	virtual void setVelocity(glm::vec2 nV);
-
-	virtual glm::vec2 normalize(glm::vec2 n);
 };

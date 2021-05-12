@@ -42,40 +42,6 @@ void Circle::update()
 	rotate(mAngularVelocity * dt);
 }
 
-glm::vec2 Circle::getCenter() {
-	return mCenter;
-}
-
-//float Rectangle::getInvMass() 
-//{
-	//return mInvMass;
-//}
-
-glm::vec2 Circle::getVelocity()
-{
-	return mVelocity;
-}
-
-float Circle::getAngularVelocity()
-{
-	return mAngularVelocity;
-}
-
-float Circle::getRestitution()
-{
-	return mRestitution;
-}
-
-float Circle::getFriction()
-{
-	return mFriction;
-}
-
-float Circle::getInertia()
-{
-	return mInertia;
-}
-
 float Circle::getRadius() 
 {
 	return mRadius;

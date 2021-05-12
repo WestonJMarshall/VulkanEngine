@@ -63,43 +63,38 @@ float RigidShape::getInvMass() {
 }
 
 glm::vec2 RigidShape::getVelocity() {
-	std::cout << "I aint getting velocity!!" << std::endl;
 	return mVelocity;
 }
 
 float RigidShape::getAngularVelocity() {
-	std::cout << "I aint getting angular velocity!!" << std::endl;
 	return mAngularVelocity;
 }
 
 float RigidShape::getRestitution() {
-	std::cout << "I aint getting restitution!!" << std::endl;
 	return mRestitution;
 }
 
 float RigidShape::getFriction() {
-	std::cout << "I aint getting friction!!" << std::endl;
 	return mFriction;
 }
 
 float RigidShape::getInertia() {
-	std::cout << "I aint getting inertia!!" << std::endl;
 	return mInertia;
 }
 
 float RigidShape::getRadius() {
-	std::cout << "I aint getting radius!!" << std::endl;
+	std::cout << "For circle" << std::endl;
 	return 0.0f;
 }
 
 std::vector<glm::vec2> RigidShape::getFaceNormals() {
-	std::cout << "I aint getting normals!!" << std::endl;
+	std::cout << "for rectangle" << std::endl;
 	std::vector<glm::vec2> empty;
 	return empty;
 }
 
 std::vector<glm::vec2> RigidShape::getVertexes() {
-	std::cout << "I aint getting vertexes!!" << std::endl;
+	std::cout << "for rectangle" << std::endl;
 	std::vector<glm::vec2> empty;
 	return empty;
 }
@@ -109,9 +104,6 @@ float RigidShape::getRotation() {
 	return 0;
 }
 
-glm::vec2 RigidShape::normalize(glm::vec2 n) {
-	return glm::vec2(0, 0);
-}
 
 void RigidShape::setAngularVelocity(float aV) {
 	std::cout << "I aint getting angular velocity!!" << std::endl;

@@ -61,20 +61,6 @@ public:
 
 	std::string getType() override;
 
-	glm::vec2 getCenter() override;
-
-	//float getInvMass() override;
-
-	glm::vec2 getVelocity() override;
-
-	float getAngularVelocity() override;
-
-	float getRestitution() override;
-
-	float getFriction() override;
-
-	float getInertia() override;
-
 	std::vector<glm::vec2> getFaceNormals() override;
 
 	std::vector<glm::vec2> getVertexes() override;
